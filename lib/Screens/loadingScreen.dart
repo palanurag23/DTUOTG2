@@ -27,6 +27,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
       } else {
         print('non empty else');
         accessTokenValue = accessToken[0];
+
+        print('accessTokenValue');
         Map<String, String> headersAccessToken = {
           "Content-type": "application/json",
           "accept": "application/json",
@@ -34,7 +36,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
         };
 
         http.Response response = await http.get(
-          Uri.https('dtu-otg.herokuapp.com', 'auth/login/'),
+          Uri.https('dtu-otg.herokuapp.com', 'auth/check-auth'),
           headers: headersAccessToken,
         );
         int statusCode = response.statusCode;
@@ -46,7 +48,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
         }
       }
       initialized = true;
-      print(initialized);
+      //   print(initialized);
     }
     super.didChangeDependencies();
   }
