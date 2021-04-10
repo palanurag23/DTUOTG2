@@ -20,7 +20,11 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider.value(value: AccessTokenData())],
+      providers: [
+        ChangeNotifierProvider.value(value: ProfileData()),
+        ChangeNotifierProvider.value(value: AccessTokenData()),
+        ChangeNotifierProvider.value(value: EmailAndUsernameData())
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
