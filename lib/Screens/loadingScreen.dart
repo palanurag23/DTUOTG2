@@ -12,6 +12,7 @@ class LoadingScreen extends StatefulWidget {
 class _LoadingScreenState extends State<LoadingScreen> {
   bool initialized = false;
   String accessTokenValue;
+
   @override
   void didChangeDependencies() async {
     // TODO: implement didChangeDependencies

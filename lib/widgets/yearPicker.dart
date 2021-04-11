@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
 
-class RollNumberPicker extends StatefulWidget {
+class YearPicker extends StatefulWidget {
   @override
-  _RollNumberPickerState createState() => _RollNumberPickerState();
+  _YearPickerState createState() => _YearPickerState();
 }
 
-class _RollNumberPickerState extends State<RollNumberPicker> {
-  NumberPicker rollNum;
-  int rollNumber = 10;
-
+class _YearPickerState extends State<YearPicker> {
+  // int joiningYear;
+  NumberPicker year;
+  int initialYearValue = DateTime.now().year;
+  int joiningYear = DateTime.now().year;
   @override
   Widget build(BuildContext context) {
     _initializeNumberPickers();
@@ -21,12 +22,12 @@ class _RollNumberPickerState extends State<RollNumberPicker> {
           children: [
             Row(
               mainAxisSize: MainAxisSize.min,
-              children: [Text('roll num  $rollNumber'), rollNum],
+              children: [Text('joining  $joiningYear'), year],
             ),
             ElevatedButton(
                 onPressed: () {
                   Provider.of<ProfileData>(context, listen: false)
-                      .setRollNumber(rollNumber);
+                      .setYear(joiningYear);
                   Navigator.of(context).pop();
                 },
                 child: Text('ok'))
@@ -37,14 +38,14 @@ class _RollNumberPickerState extends State<RollNumberPicker> {
   }
 
   void _initializeNumberPickers() {
-    rollNum = new NumberPicker(
-      value: rollNumber,
-      minValue: 1,
+    year = new NumberPicker(
+      value: joiningYear,
+      minValue: initialYearValue - 10,
       step: 1,
-      maxValue: 999,
+      maxValue: initialYearValue + 10,
       onChanged: (v) {
         setState(() {
-          rollNumber = v;
+          joiningYear = v;
         });
       },
     );

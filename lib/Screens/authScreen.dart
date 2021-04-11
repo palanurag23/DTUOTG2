@@ -1,3 +1,4 @@
+import 'package:DTUOTG/models/screenArguments.dart';
 import 'package:DTUOTG/providers/info_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -329,9 +330,12 @@ class _AuthScreenState extends State<AuthScreen> {
                               if (resp["first_time_login"] == true) {
                                 Provider.of<AccessTokenData>(context,
                                         listen: false)
-                                    .set(resp["tokens"]["access"].toString());
-                                Navigator.of(context)
-                                    .pushNamed('/EnterDetailsScreen');
+                                    .setTokenAndDate(
+                                        resp["tokens"]["access"].toString());
+                                Navigator.of(context).pushNamed(
+                                    '/EnterDetailsScreen',
+                                    arguments: ScreenArguments(
+                                        username: username.text));
                               } else {
                                 Provider.of<AccessTokenData>(context,
                                         listen: false)
@@ -451,10 +455,10 @@ class _AuthScreenState extends State<AuthScreen> {
                               waiting = false;
                               if (resp["status"] == 'OK') {
                                 //  signUpOtpStep = true;
-                                Provider.of<EmailAndUsernameData>(context,
-                                        listen: false)
-                                    .addEmailAndUsername(
-                                        email.text, username.text);
+                                // Provider.of<EmailAndUsernameData>(context,
+                                //         listen: false)
+                                //     .addEmailAndUsername(
+                                //         email.text, username.text);
                                 setState(() {
                                   waiting = false;
 

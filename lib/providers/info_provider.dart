@@ -7,7 +7,7 @@ class AccessTokenData with ChangeNotifier {
   List<String> accessToken = [];
 
   List<DateTime> dateTime = [];
-  set(String accessToken) {
+  setTokenAndDate(String accessToken) {
     this.accessToken = [accessToken];
     dateTime = [DateTime.now()];
   }
@@ -106,6 +106,34 @@ class ProfileData with ChangeNotifier {
     notifyListeners();
   }
 
+  String getBatch() {
+    return batch.isEmpty ? ' ' : batch[0];
+  }
+
+  String getBranch() {
+    return branch.isEmpty ? ' ' : branch[0];
+  }
+
+  int getYear() {
+    return year.isEmpty ? 0 : year[0];
+  }
+
+  int getRollNumber() {
+    return rollNumber.isEmpty ? 0 : rollNumber[0];
+  }
+
+  void saveSetedChanges() {
+    DbHelper.insertEmailAndUsername('Profile', {
+      'id': 'id',
+      'name': name,
+      'rollNumber': rollNumber.toString(),
+      'branch': branch,
+      'year': year.toString(),
+      'batch': batch
+    });
+    notifyListeners();
+  }
+
   setBranch(String branch) {
     this.branch = [branch];
     notifyListeners();
@@ -113,6 +141,16 @@ class ProfileData with ChangeNotifier {
 
   setBatch(String batch) {
     this.batch = [batch];
+    notifyListeners();
+  }
+
+  setYear(int year) {
+    this.year = [year];
+    notifyListeners();
+  }
+
+  setName(String name) {
+    this.name = [name];
     notifyListeners();
   }
 

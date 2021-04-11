@@ -1,8 +1,13 @@
+import 'package:DTUOTG/models/screenArguments.dart';
 import 'package:DTUOTG/providers/info_provider.dart';
 import 'package:DTUOTG/widgets/rollNumberPicker.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import '../widgets/yearPicker.dart' as yp;
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -15,6 +20,7 @@ class EnterDetailsScreen extends StatefulWidget {
 class _EnterDetailsScreenState extends State<EnterDetailsScreen> {
   bool initialized = false;
   int rollNum;
+  int year;
   String _myBranch;
   String _myBatch;
 
@@ -27,14 +33,93 @@ class _EnterDetailsScreenState extends State<EnterDetailsScreen> {
 
   final formGlobalKey = GlobalKey<FormState>();
   final name = TextEditingController();
-
+  bool waiting = false;
   @override
   Widget build(BuildContext context) {
-    Provider.of<EmailAndUsernameData>(context, listen: false).fetchAndSetData();
+    ScreenArguments args = ModalRoute.of(context).settings.arguments;
+    String username = args.username;
+    ///////////////////  Provider.of<EmailAndUsernameData>(context, listen: false).fetchAndSetData();
     rollNum = Provider.of<ProfileData>(context).rollNumber.isEmpty
         ? 0
         : Provider.of<ProfileData>(context).rollNumber[0];
+    year = Provider.of<ProfileData>(context).year.isEmpty
+        ? DateTime.now().year
+        : Provider.of<ProfileData>(context).year[0];
     return Scaffold(
+      persistentFooterButtons: [
+        ElevatedButton(
+            ////////TOKEN?save, BATCH,RESPONSE CHECK,IF OK THEN SAVE IN DATA BASE
+            onPressed: () async {
+              if (formGlobalKey.currentState.validate() && waiting == false) {
+                Provider.of<ProfileData>(context, listen: false)
+                    .setName(name.text);
+                var accessToken =
+                    Provider.of<AccessTokenData>(context, listen: false)
+                        .accessToken;
+                var accessTokenValue = accessToken[0];
+                //if status is ok  // // // //     Provider.of<ProfileData>(context, listen: false)
+                // // // //         .saveSetedChanges();
+                setState(() {
+                  waiting = true;
+                });
+                Map<String, String> headersProfile = {
+                  "Content-type": "application/json",
+                  "accept": "application/json",
+                  "Authorization": "Bearer $accessTokenValue"
+                };
+                var rollNUmString = rollNum.toString();
+                var formattedRollNum = rollNUmString.length == 3
+                    ? rollNum
+                    : rollNUmString.length == 2
+                        ? '0' + rollNUmString
+                        : '00' + rollNUmString;
+                Map mapjsonnprofile = {
+                  "name": "${name.text}",
+                  "roll_no": "$formattedRollNum",
+                  "branch":
+                      "${Provider.of<ProfileData>(context, listen: false).getBranch()}",
+                  "year": Provider.of<ProfileData>(context, listen: false)
+                      .getYear(),
+                  "batch":
+                      "${Provider.of<ProfileData>(context, listen: false).getBatch()}"
+                };
+                http.Response response = await http.put(
+                    Uri.https(
+                        'dtu-otg.herokuapp.com', 'auth/profile/$username'),
+                    headers: headersProfile,
+                    body: json.encode(mapjsonnprofile));
+                int statusCode = response.statusCode;
+                Map resp = json.decode(response.body);
+
+                setState(() {
+                  waiting = false;
+                });
+                if (resp["status"] != 'FAILED') {
+                  Provider.of<ProfileData>(context, listen: false)
+                      .saveSetedChanges();
+                  Provider.of<AccessTokenData>(context, listen: false)
+                      .addAccessToken(
+                          Provider.of<AccessTokenData>(context, listen: false)
+                              .getAccessToken(),
+                          Provider.of<AccessTokenData>(context, listen: false)
+                              .getDateTime());
+                  Navigator.of(context).pushNamed('/TabsScreen');
+                } else {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          child: Container(
+                            child: Text(response.body),
+                          ),
+                        );
+                      });
+                }
+              }
+            },
+            child:
+                waiting ? CircularProgressIndicator() : Text('save and next'))
+      ],
       appBar: AppBar(
         title: Text('ENTER DETAILS 1st time'),
       ),
@@ -80,6 +165,19 @@ class _EnterDetailsScreenState extends State<EnterDetailsScreen> {
                 title: Text('rollnumber'),
                 trailing: Text(rollNum.toString()),
               ),
+              ListTile(
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          child: yp.YearPicker(),
+                        );
+                      });
+                },
+                title: Text('year'),
+                trailing: Text(year.toString()),
+              ),
               Container(
                 padding: EdgeInsets.all(16),
                 child: DropDownFormField(
@@ -99,6 +197,8 @@ class _EnterDetailsScreenState extends State<EnterDetailsScreen> {
                     });
                   },
                   onChanged: (value) {
+                    Provider.of<ProfileData>(context, listen: false)
+                        .setBranch(_myBranch);
                     setState(() {
                       _myBranch = value;
                     });
@@ -188,6 +288,8 @@ class _EnterDetailsScreenState extends State<EnterDetailsScreen> {
                     });
                   },
                   onChanged: (value) {
+                    Provider.of<ProfileData>(context, listen: false)
+                        .setBatch(_myBatch);
                     setState(() {
                       _myBatch = value;
                     });
