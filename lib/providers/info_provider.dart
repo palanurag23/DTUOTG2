@@ -97,11 +97,11 @@ class ProfileData with ChangeNotifier {
     // DbHelper.deleteSingleHeight('id');
     DbHelper.insertEmailAndUsername('Profile', {
       'id': 'id',
-      'name': name,
+      'name': name[0],
       'rollNumber': rollNumber.toString(),
-      'branch': branch,
+      'branch': branch[0],
       'year': year.toString(),
-      'batch': batch
+      'batch': batch[0]
     });
     notifyListeners();
   }
@@ -173,6 +173,34 @@ class ProfileData with ChangeNotifier {
       batch = [(profileData[0]['batch'])];
       year = [int.parse(profileData[0]['year'])];
       print('................email and username fetched and set $profileData');
+    }
+    notifyListeners();
+  }
+}
+
+//
+class UsernameData with ChangeNotifier {
+  List<String> username = [];
+
+  void addUsername(String username) async {
+    this.username = [username];
+
+    // DbHelper.deleteSingleHeight('id');
+    DbHelper.insertAccessToken('username', {'id': 'id', 'username': username});
+    notifyListeners();
+  }
+
+  Future<void> fetchAndSetData() async {
+    print('fetching username');
+    var usernameData = await DbHelper.getUsernameData();
+    if (usernameData.isEmpty) {
+      print('....................................empty username');
+    } else {
+      print(usernameData);
+
+      username = [(usernameData[0]['accessToken'])];
+
+      print('................user name fetched and set$username');
     }
     notifyListeners();
   }

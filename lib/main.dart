@@ -21,6 +21,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: UsernameData()),
         ChangeNotifierProvider.value(value: ProfileData()),
         ChangeNotifierProvider.value(value: AccessTokenData()),
         ChangeNotifierProvider.value(value: EmailAndUsernameData())

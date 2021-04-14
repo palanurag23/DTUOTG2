@@ -89,7 +89,7 @@ class _EnterDetailsScreenState extends State<EnterDetailsScreen> {
                     headers: headersProfile,
                     body: json.encode(mapjsonnprofile));
                 int statusCode = response.statusCode;
-                Map resp = json.decode(response.body);
+                var resp = json.decode(response.body);
 
                 setState(() {
                   waiting = false;

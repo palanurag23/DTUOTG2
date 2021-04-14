@@ -332,6 +332,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                         listen: false)
                                     .setTokenAndDate(
                                         resp["tokens"]["access"].toString());
+                                Provider.of<UsernameData>(context,
+                                        listen: false)
+                                    .addUsername(username.text);
                                 Navigator.of(context).pushNamed(
                                     '/EnterDetailsScreen',
                                     arguments: ScreenArguments(
@@ -342,6 +345,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                     .addAccessToken(
                                         resp["tokens"]["access"].toString(),
                                         DateTime.now());
+                                Provider.of<UsernameData>(context,
+                                        listen: false)
+                                    .addUsername(username.text);
 
                                 Navigator.of(context).pushNamed('/TabsScreen');
                               }

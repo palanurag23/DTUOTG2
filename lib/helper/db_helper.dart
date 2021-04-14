@@ -3,6 +3,19 @@ import 'package:path/path.dart' as path;
 import 'package:sqflite/sqlite_api.dart';
 
 class DbHelper {
+  static Future<Database> dataBaseForUsername() async {
+    //......................................Getting access to DB
+    final dbPath = await sql.getDatabasesPath();
+    return sql.openDatabase(
+        // searches for db ,if not found,it creats db
+        path.join(dbPath, 'username.db'), onCreate: (db, version) {
+      return db
+          .execute('CREATE TABLE username(id TEXT PRIMARY KEY,username TEXT)');
+    }, version: 1);
+
+    //......................................Getting access to DB
+  }
+
   static Future<Database> dataBaseForAccessToken() async {
     //......................................Getting access to DB
     final dbPath = await sql.getDatabasesPath();
@@ -43,6 +56,15 @@ class DbHelper {
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
   }
 
+  static Future<void> insertUsername(
+    String table,
+    Map<String, Object> username,
+  ) async {
+    final dbForUsername = await DbHelper.dataBaseForUsername();
+    dbForUsername.insert(table, username,
+        conflictAlgorithm: sql.ConflictAlgorithm.replace);
+  }
+
   static Future<void> insertProfile(
     String table,
     Map<String, Object> profile,
@@ -64,6 +86,11 @@ class DbHelper {
   static Future<List<Map<String, dynamic>>> getAccessTokenData() async {
     final db = await DbHelper.dataBaseForAccessToken();
     return db.query('AccessToken');
+  }
+
+  static Future<List<Map<String, dynamic>>> getUsernameData() async {
+    final db = await DbHelper.dataBaseForUsername();
+    return db.query('username');
   }
 
   static Future<List<Map<String, dynamic>>> getProfileData() async {

@@ -41,7 +41,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
           headers: headersAccessToken,
         );
         int statusCode = response.statusCode;
-        Map resp = json.decode(response.body);
+        var resp = json.decode(response.body);
         if (resp["status"] == 'OK') {
           Navigator.of(context).pushNamed('/TabsScreen');
         } else {
