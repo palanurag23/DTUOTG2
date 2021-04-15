@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path; //otherwise context error
+import 'package:provider/provider.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:http/http.dart' as http;
+import '../providers/info_provider.dart';
+import 'dart:convert';
+
+import '../providers/info_provider.dart';
 
 class HomeTab extends StatefulWidget {
   final height;
@@ -12,6 +19,40 @@ class HomeTab extends StatefulWidget {
 int events0Schedule1 = 0;
 
 class _HomeTabState extends State<HomeTab> {
+  bool eventsInitialized = false;
+  @override
+  void didChangeDependencies() async {
+    if (!eventsInitialized) {
+      var lastRefreshedTime =
+          Provider.of<EventsData>(context, listen: false).getLastRefreshed();
+      int x = DateTime.now().difference(lastRefreshedTime).inSeconds;
+      print('/////////////diff x$x');
+      if (x > 10) {
+        var accessToken =
+            Provider.of<AccessTokenData>(context, listen: false).accessToken;
+        var accessTokenValue = accessToken[0];
+        Map<String, String> headersEvents = {
+          "Content-type": "application/json",
+          "accept": "application/json",
+          "Authorization": "Bearer $accessTokenValue"
+        };
+        http.Response response = await http.get(
+          Uri.https('dtu-otg.herokuapp.com', 'auth/profile'),
+          headers: headersEvents,
+        );
+        int statusCode = response.statusCode;
+        var resp = json.decode(response.body);
+      }
+      Provider.of<EventsData>(context, listen: false).setLastRefreshed();
+      setState(() {
+        eventsInitialized = true;
+      });
+    }
+
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -59,13 +100,50 @@ class _HomeTabState extends State<HomeTab> {
             child: Container(
               width: double.infinity,
               child: Center(
-                child: Text(
-                  events0Schedule1 == 0 ? 'events' : 'schedule',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 70,
-                      color: Colors.amberAccent),
-                ),
+                child: events0Schedule1 == 0
+                    ? Container(
+                        child: eventsInitialized
+                            ? ListView.builder(
+                                itemCount: Provider.of<EventsData>(context)
+                                    .events
+                                    .length,
+                                itemBuilder: (context, index) {
+                                  var events =
+                                      Provider.of<EventsData>(context).events;
+                                  return ListTile(
+                                    subtitle: Text(
+                                      events[index].eventType,
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    leading: Icon(
+                                      Icons.ac_unit,
+                                      color: Colors.blue,
+                                    ),
+                                    trailing: IconButton(
+                                      onPressed: () {
+                                        Provider.of<EventsData>(context,
+                                                listen: false)
+                                            .changeFavoriteStatus(
+                                                events[index].id);
+                                      },
+                                      icon: Icon(
+                                        events[index].favorite
+                                            ? Icons.favorite
+                                            : Icons.favorite_border_rounded,
+                                        color: events[index].favorite
+                                            ? Colors.red
+                                            : Colors.amber,
+                                      ),
+                                    ),
+                                    title: Text(
+                                      events[index].name,
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  );
+                                })
+                            : CircularProgressIndicator(),
+                      )
+                    : Container(),
               ),
               color: Colors.black,
             ),

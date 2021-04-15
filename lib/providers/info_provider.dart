@@ -1,7 +1,75 @@
+import 'package:DTUOTG/models/events.dart';
+
 import '../helper/db_helper.dart';
 import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
+
+class EventsData with ChangeNotifier {
+  DateTime lastRefreshed = DateTime(2000);
+  setLastRefreshed() {
+    lastRefreshed = DateTime.now();
+  }
+
+  DateTime getLastRefreshed() {
+    return lastRefreshed;
+  }
+
+  List<Event> events = [
+    Event(
+        dateime: DateTime.now(),
+        eventType: 'education',
+        favorite: true,
+        id: 1,
+        name: 'french seminar',
+        owner: 'french'),
+    Event(
+        dateime: DateTime.now(),
+        eventType: 'cultural',
+        id: 2,
+        favorite: false,
+        name: 'fest',
+        owner: 'name1'),
+    Event(
+        dateime: DateTime.now(),
+        eventType: 'cultural',
+        id: 3,
+        name: 'workshop',
+        favorite: true,
+        owner: 'name2'),
+    Event(
+        dateime: DateTime.now(),
+        eventType: '',
+        id: 4,
+        name: 'event',
+        favorite: false,
+        owner: 'name3')
+  ];
+  changeFavoriteStatus(int id) {
+    int index = events.indexWhere(
+      (element) => element.id == id,
+    );
+
+    Event e = Event(
+        name: events[index].name,
+        owner: events[index].owner,
+        id: events[index].id,
+        eventType: events[index].eventType,
+        dateime: events[index].dateime,
+        favorite: !events[index].favorite);
+    events[index] = e;
+    notifyListeners();
+  }
+
+  setEvents(List<Event> events) {
+    this.events = events;
+    notifyListeners();
+  }
+
+  List<Event> getEvents() {
+    return events;
+  }
+}
 
 class AccessTokenData with ChangeNotifier {
   List<String> accessToken = [];

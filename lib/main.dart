@@ -2,9 +2,12 @@ import 'package:DTUOTG/Screens/authScreen.dart';
 import 'package:DTUOTG/Screens/enterDetailsScreen.dart';
 import 'package:DTUOTG/Screens/loadingScreen.dart';
 import 'package:DTUOTG/Screens/tabsScreen.dart';
+import 'package:DTUOTG/models/events.dart';
 import 'package:DTUOTG/providers/info_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'providers/info_provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -21,6 +24,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: Event()),
+        ChangeNotifierProvider.value(value: EventsData()),
         ChangeNotifierProvider.value(value: UsernameData()),
         ChangeNotifierProvider.value(value: ProfileData()),
         ChangeNotifierProvider.value(value: AccessTokenData()),
