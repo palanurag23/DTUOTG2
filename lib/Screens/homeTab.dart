@@ -1,4 +1,5 @@
 import 'package:DTUOTG/models/events.dart';
+import 'package:DTUOTG/models/screenArguments.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path; //otherwise context error
 import 'package:provider/provider.dart';
@@ -124,6 +125,12 @@ class _HomeTabState extends State<HomeTab> {
                                   var events =
                                       Provider.of<EventsData>(context).events;
                                   return ListTile(
+                                    onTap: () {
+                                      Navigator.of(context).pushNamed(
+                                          '/EventsDetailScreen',
+                                          arguments: ScreenArguments(
+                                              id: events[index].id));
+                                    },
                                     subtitle: Text(
                                       events[index].eventType,
                                       style: TextStyle(color: Colors.white),

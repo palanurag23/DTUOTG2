@@ -1,4 +1,5 @@
 class ScreenArguments {
   String username;
-  ScreenArguments({this.username});
+  int id;
+  ScreenArguments({this.username, this.id});
 }

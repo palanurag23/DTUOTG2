@@ -1,5 +1,6 @@
 import 'package:DTUOTG/Screens/authScreen.dart';
 import 'package:DTUOTG/Screens/enterDetailsScreen.dart';
+import 'package:DTUOTG/Screens/eventsDetailScreen.dart';
 import 'package:DTUOTG/Screens/loadingScreen.dart';
 import 'package:DTUOTG/Screens/tabsScreen.dart';
 import 'package:DTUOTG/models/events.dart';
@@ -52,6 +53,7 @@ class _MyAppState extends State<MyApp> {
         home: LoadingScreen(),
         //AuthScreen(),
         routes: {
+          '/EventsDetailScreen': (context) => EventsDetailScreen(),
           '/AuthScreen': (context) => AuthScreen(),
           '/EnterDetailsScreen': (context) => EnterDetailsScreen(),
           '/TabsScreen': (context) => TabsScreen()
