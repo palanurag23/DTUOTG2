@@ -1,3 +1,4 @@
+import 'package:DTUOTG/models/events.dart';
 import 'package:DTUOTG/models/screenArguments.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path; //otherwise context error
@@ -5,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../providers/info_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../models/events.dart';
 
 class EventsDetailScreen extends StatefulWidget {
   static const routeName = '/EventsDetailScreen';
@@ -18,6 +20,7 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
   bool initialized = false;
   bool waiting = true;
   Map<String, dynamic> resp;
+  EventDetails _eventDetails;
   @override
   void didChangeDependencies() async {
     ScreenArguments args = ModalRoute.of(context).settings.arguments;
@@ -39,6 +42,20 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
       int statusCode = response.statusCode;
       resp = json.decode(response.body);
       print('//////$resp');
+      _eventDetails = EventDetails(
+          id: resp['id'],
+          owner: resp['owner'] == null ? ' ' : ' ',
+          name: resp['name'],
+          longitute: num.parse(resp['longitude']),
+          description: resp['description'],
+          duration: Duration(days: 3 //resp['duration']
+              ),
+          registered: resp['registered'] == 'true' ? true : false,
+          type: resp['type_event'],
+          count: resp['count'],
+          dateTime: DateTime.parse(resp['date_time']),
+          latitude: num.parse(resp['latitude']));
+      print('//////$resp');
       initialized = true;
       setState(() {
         waiting = false;
@@ -59,9 +76,47 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
         child: Center(
             child: waiting
                 ? CircularProgressIndicator()
-                : Text(
-                    resp.toString(),
-                    style: TextStyle(fontSize: 20),
+                : ListView(
+                    children: [
+                      ListTile(
+                        title: Text('id:  ${_eventDetails.id.toString()}'),
+                      ),
+                      ListTile(
+                        title: Text('owner ${_eventDetails.owner}'),
+                      ),
+                      ListTile(
+                        title: Text('name ${_eventDetails.name}'),
+                      ),
+                      ListTile(
+                        title: Text(
+                            'latitude ${_eventDetails.latitude.toString()}'),
+                      ),
+                      ListTile(
+                        title: Text(
+                            'longitude ${_eventDetails.longitute.toString()}'),
+                      ),
+                      ListTile(
+                        title: Text('description ${_eventDetails.description}'),
+                      ),
+                      ListTile(
+                        title: Text(
+                            'day${_eventDetails.dateTime.day}month${_eventDetails.dateTime.month}'),
+                      ),
+                      ListTile(
+                        title: Text(
+                            'duration ${_eventDetails.duration.inDays.toString()}'),
+                      ),
+                      ListTile(
+                        title: Text('type ${_eventDetails.type}'),
+                      ),
+                      ListTile(
+                        title: Text(
+                            'registered ${_eventDetails.registered.toString()}'),
+                      ),
+                      ListTile(
+                        title: Text('count ${_eventDetails.count.toString()}'),
+                      )
+                    ],
                   )),
       ),
     );
