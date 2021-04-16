@@ -1,3 +1,4 @@
+import 'package:DTUOTG/models/events.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path; //otherwise context error
 import 'package:provider/provider.dart';
@@ -37,11 +38,23 @@ class _HomeTabState extends State<HomeTab> {
           "Authorization": "Bearer $accessTokenValue"
         };
         http.Response response = await http.get(
-          Uri.https('dtu-otg.herokuapp.com', 'auth/profile'),
+          Uri.https('dtu-otg.herokuapp.com', 'events'),
           headers: headersEvents,
         );
         int statusCode = response.statusCode;
-        var resp = json.decode(response.body);
+        List<dynamic> resp = json.decode(response.body);
+        List<Event> eves = resp.map<Event>((e) {
+          return Event(
+            favorite: false,
+            name: e['name'],
+            owner: e['owner'],
+            id: e['id'],
+            eventType: e['type_event'],
+            dateime: DateTime.parse(e['date_time']),
+          );
+        }).toList();
+        Provider.of<EventsData>(context, listen: false).setEvents(eves);
+        print(resp);
       }
       Provider.of<EventsData>(context, listen: false).setLastRefreshed();
       setState(() {
