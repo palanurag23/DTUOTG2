@@ -254,7 +254,7 @@ class UsernameData with ChangeNotifier {
     this.username = [username];
 
     // DbHelper.deleteSingleHeight('id');
-    DbHelper.insertAccessToken('username', {'id': 'id', 'username': username});
+    DbHelper.insertUsername('username', {'id': 'id', 'username': username});
     notifyListeners();
   }
 
@@ -266,7 +266,7 @@ class UsernameData with ChangeNotifier {
     } else {
       print(usernameData);
 
-      username = [(usernameData[0]['accessToken'])];
+      username = [(usernameData[0]['username'])];
 
       print('................user name fetched and set$username');
     }

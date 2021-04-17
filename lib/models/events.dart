@@ -24,7 +24,7 @@ class EventDetails with ChangeNotifier {
   num longitute;
   String description;
   DateTime dateTime;
-  Duration duration;
+  String duration;
   String type;
   bool registered;
   int count;

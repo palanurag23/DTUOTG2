@@ -1,7 +1,7 @@
 import 'package:DTUOTG/models/events.dart';
 import 'package:DTUOTG/models/screenArguments.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' as path; //otherwise context error
+//import 'package:path/path.dart' as path; //otherwise context error
 import 'package:provider/provider.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:http/http.dart' as http;
@@ -46,7 +46,7 @@ class _HomeTabState extends State<HomeTab> {
         List<dynamic> resp = json.decode(response.body);
         List<Event> eves = resp.map<Event>((e) {
           return Event(
-            favorite: false,
+            favorite: e['registered'],
             name: e['name'],
             owner: e['owner'],
             id: e['id'],
@@ -125,6 +125,9 @@ class _HomeTabState extends State<HomeTab> {
                                   var events =
                                       Provider.of<EventsData>(context).events;
                                   return ListTile(
+                                    tileColor: events[index].favorite
+                                        ? Colors.redAccent
+                                        : Colors.blueGrey[900],
                                     onTap: () {
                                       Navigator.of(context).pushNamed(
                                           '/EventsDetailScreen',
@@ -138,22 +141,6 @@ class _HomeTabState extends State<HomeTab> {
                                     leading: Icon(
                                       Icons.ac_unit,
                                       color: Colors.blue,
-                                    ),
-                                    trailing: IconButton(
-                                      onPressed: () {
-                                        Provider.of<EventsData>(context,
-                                                listen: false)
-                                            .changeFavoriteStatus(
-                                                events[index].id);
-                                      },
-                                      icon: Icon(
-                                        events[index].favorite
-                                            ? Icons.favorite
-                                            : Icons.favorite_border_rounded,
-                                        color: events[index].favorite
-                                            ? Colors.red
-                                            : Colors.amber,
-                                      ),
                                     ),
                                     title: Text(
                                       events[index].name,

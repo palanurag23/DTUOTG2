@@ -7,6 +7,7 @@ import '../providers/info_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/events.dart';
+import '../providers/server_connection_functions.dart' as scf;
 
 class EventsDetailScreen extends StatefulWidget {
   static const routeName = '/EventsDetailScreen';
@@ -48,9 +49,8 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
           name: resp['name'],
           longitute: num.parse(resp['longitude']),
           description: resp['description'],
-          duration: Duration(days: 3 //resp['duration']
-              ),
-          registered: resp['registered'] == 'true' ? true : false,
+          duration: resp['duration'],
+          registered: resp['registered'],
           type: resp['type_event'],
           count: resp['count'],
           dateTime: DateTime.parse(resp['date_time']),
@@ -103,13 +103,45 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
                             'day${_eventDetails.dateTime.day}month${_eventDetails.dateTime.month}'),
                       ),
                       ListTile(
-                        title: Text(
-                            'duration ${_eventDetails.duration.inDays.toString()}'),
+                        title: Text('duration ${_eventDetails.duration}'),
                       ),
                       ListTile(
                         title: Text('type ${_eventDetails.type}'),
                       ),
                       ListTile(
+                        onTap: () async {
+                          await Provider.of<UsernameData>(context,
+                                  listen: false)
+                              .fetchAndSetData();
+                          bool registered = _eventDetails.registered
+                              ? await scf.Server_Connection_Functions()
+                                  .unregisterForEvent(
+                                      _eventDetails.id,
+                                      Provider.of<UsernameData>(context, listen: false)
+                                          .username[0],
+                                      Provider.of<AccessTokenData>(context,
+                                              listen: false)
+                                          .getAccessToken())
+                              : await scf.Server_Connection_Functions()
+                                  .registerForEvent(
+                                      _eventDetails.id,
+                                      Provider.of<UsernameData>(context,
+                                              listen: false)
+                                          .username[0],
+                                      Provider.of<AccessTokenData>(context,
+                                              listen: false)
+                                          .getAccessToken());
+                          if (_eventDetails.registered != registered) {
+                            Provider.of<EventsData>(context, listen: false)
+                                .changeFavoriteStatus(_eventDetails.id);
+                          }
+                          setState(() {
+                            _eventDetails.registered = registered;
+                          });
+                        },
+                        tileColor: _eventDetails.registered
+                            ? Colors.redAccent
+                            : Colors.white,
                         title: Text(
                             'registered ${_eventDetails.registered.toString()}'),
                       ),
