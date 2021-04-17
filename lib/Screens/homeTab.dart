@@ -22,6 +22,10 @@ int events0Schedule1 = 0;
 
 class _HomeTabState extends State<HomeTab> {
   bool eventsInitialized = false;
+  List<Event> eves = [];
+
+  List<Event> sheduled = [];
+
   @override
   void didChangeDependencies() async {
     if (!eventsInitialized) {
@@ -44,7 +48,7 @@ class _HomeTabState extends State<HomeTab> {
         );
         int statusCode = response.statusCode;
         List<dynamic> resp = json.decode(response.body);
-        List<Event> eves = resp.map<Event>((e) {
+        eves = resp.map<Event>((e) {
           return Event(
             favorite: e['registered'],
             name: e['name'],
@@ -57,6 +61,11 @@ class _HomeTabState extends State<HomeTab> {
         Provider.of<EventsData>(context, listen: false).setEvents(eves);
         print(resp);
       }
+      eves.forEach((element) {
+        if (element.favorite) {
+          sheduled.add(element);
+        }
+      });
       Provider.of<EventsData>(context, listen: false).setLastRefreshed();
       setState(() {
         eventsInitialized = true;
@@ -150,7 +159,25 @@ class _HomeTabState extends State<HomeTab> {
                                 })
                             : CircularProgressIndicator(),
                       )
-                    : Container(),
+                    : Container(
+                        child: !eventsInitialized
+                            ? CircularProgressIndicator()
+                            : ListView.builder(
+                                itemBuilder: (context, index) {
+                                  print('///////${sheduled.length}');
+                                  return ListTile(
+                                    subtitle: Text(
+                                      '${sheduled[index].dateime.toString()}',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    title: Text(
+                                      '${sheduled[index].name}',
+                                      style: TextStyle(color: Colors.amber),
+                                    ),
+                                  );
+                                },
+                                itemCount: sheduled.length,
+                              )),
               ),
               color: Colors.black,
             ),

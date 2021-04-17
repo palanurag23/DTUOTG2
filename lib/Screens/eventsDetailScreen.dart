@@ -141,7 +141,7 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
                         },
                         tileColor: _eventDetails.registered
                             ? Colors.redAccent
-                            : Colors.white,
+                            : Colors.blue,
                         title: Text(
                             'registered ${_eventDetails.registered.toString()}'),
                       ),
