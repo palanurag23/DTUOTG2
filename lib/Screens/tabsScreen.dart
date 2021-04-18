@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/info_provider.dart';
 import 'dart:convert';
+import '../widgets/drawer.dart' as drawer;
 import 'package:http/http.dart' as http;
 
 class TabsScreen extends StatefulWidget {
@@ -12,6 +13,10 @@ class TabsScreen extends StatefulWidget {
 }
 
 class _TabsScreenState extends State<TabsScreen> {
+  ////////////
+  GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+
+  ///////////
   bool initialized = false;
   // String respString = '';
   // @override
@@ -44,7 +49,7 @@ class _TabsScreenState extends State<TabsScreen> {
   //   super.didChangeDependencies();
   // }
   int _selectedPageIndex = 2;
-  List<Map<String, Object>> _pages;
+  List<Map<String, Widget>> _pages;
   @override
   void didChangeDependencies() {
     if (!initialized) {
@@ -58,35 +63,30 @@ class _TabsScreenState extends State<TabsScreen> {
             statusBarHeight: statusBarHeight,
             height: totalHeight - bottomNavigationBarHeight,
           ),
-          'title': 'home'
         },
         {
           'page': HomeTab(
             statusBarHeight: statusBarHeight,
             height: totalHeight - bottomNavigationBarHeight,
           ),
-          'title': 'home'
         },
         {
           'page': HomeTab(
             statusBarHeight: statusBarHeight,
             height: totalHeight - bottomNavigationBarHeight,
           ),
-          'title': 'home'
         },
         {
           'page': HomeTab(
             statusBarHeight: statusBarHeight,
             height: totalHeight - bottomNavigationBarHeight,
           ),
-          'title': 'home'
         },
         {
           'page': HomeTab(
             statusBarHeight: statusBarHeight,
             height: totalHeight - bottomNavigationBarHeight,
           ),
-          'title': 'home'
         }
       ];
       initialized = false;
@@ -99,11 +99,21 @@ class _TabsScreenState extends State<TabsScreen> {
   void initState() {
     // TODO: implement initState
     _pages = [
-      {'page': HomeTab(), 'title': 'home'},
-      {'page': HomeTab(), 'title': 'home'},
-      {'page': HomeTab(), 'title': 'home'},
-      {'page': HomeTab(), 'title': 'home'},
-      {'page': HomeTab(), 'title': 'home'}
+      {
+        'page': HomeTab(),
+      },
+      {
+        'page': HomeTab(),
+      },
+      {
+        'page': HomeTab(),
+      },
+      {
+        'page': HomeTab(),
+      },
+      {
+        'page': HomeTab(),
+      }
     ]; //you can use 'widget.' in build method but not outside..
     //and you cant create variables in initState..
     //you can only assign values to the non final variables here..like _pages
@@ -127,12 +137,23 @@ class _TabsScreenState extends State<TabsScreen> {
     var bottomNavigationBarHeight = mediaQueryData.padding.bottom;
     var statusBarHeight = mediaQueryData.padding.top;
     return Scaffold(
-      drawer: Container(
-        color: Colors.amber[800],
-        width: 300,
+      key: _drawerKey,
+      drawer: Drawer(
+        child: drawer.Drawer(
+          statusBarHeight: statusBarHeight,
+        ),
       ),
       backgroundColor: Colors.white,
-      body: _pages[_selectedPageIndex]['page'],
+      body: Stack(children: [
+        _pages[_selectedPageIndex]['page'],
+        Positioned(
+          left: 20,
+          top: 40,
+          child: IconButton(
+              icon: Icon(Icons.line_weight_rounded),
+              onPressed: () => _drawerKey.currentState.openDrawer()),
+        ),
+      ]),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.shifting,
         // type: BottomNavigationBarType.shifting,//with shifting..style items separatly
