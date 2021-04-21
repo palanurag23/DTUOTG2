@@ -18,13 +18,15 @@ class EventsDetailScreen extends StatefulWidget {
 }
 
 class _EventsDetailScreenState extends State<EventsDetailScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool initialized = false;
   bool waiting = true;
   Map<String, dynamic> resp;
   EventDetails _eventDetails;
+  ScreenArguments args;
   @override
   void didChangeDependencies() async {
-    ScreenArguments args = ModalRoute.of(context).settings.arguments;
+    args = ModalRoute.of(context).settings.arguments;
     int eventID = args.id;
     if (!initialized) {
       var accessToken =
@@ -69,6 +71,7 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('eve detail'),
       ),
@@ -110,34 +113,22 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
                       ),
                       ListTile(
                         onTap: () async {
-                          await Provider.of<UsernameData>(context,
-                                  listen: false)
-                              .fetchAndSetData();
                           bool registered = _eventDetails.registered
                               ? await scf.Server_Connection_Functions()
                                   .unregisterForEvent(
-                                      _eventDetails.id,
-                                      Provider.of<UsernameData>(context, listen: false)
-                                          .username[0],
-                                      Provider.of<AccessTokenData>(context,
-                                              listen: false)
-                                          .getAccessToken())
+                                      _eventDetails.id, args.context)
                               : await scf.Server_Connection_Functions()
                                   .registerForEvent(
-                                      _eventDetails.id,
-                                      Provider.of<UsernameData>(context,
-                                              listen: false)
-                                          .username[0],
-                                      Provider.of<AccessTokenData>(context,
-                                              listen: false)
-                                          .getAccessToken());
-                          if (_eventDetails.registered != registered) {
-                            Provider.of<EventsData>(context, listen: false)
-                                .changeFavoriteStatus(_eventDetails.id);
-                          }
-                          setState(() {
-                            _eventDetails.registered = registered;
-                          });
+                                      _eventDetails.id, args.context);
+                          // if (_eventDetails.registered != registered) {
+                          //   //still not being added or removed from schedule
+                          //   Provider.of<EventsData>(args.context, listen: false)
+                          //       .changeFavoriteStatus(_eventDetails.id);
+                          // }
+                          if (mounted)
+                            setState(() {
+                              _eventDetails.registered = registered;
+                            });
                         },
                         tileColor: _eventDetails.registered
                             ? Colors.redAccent

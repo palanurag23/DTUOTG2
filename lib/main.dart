@@ -1,3 +1,4 @@
+import 'package:DTUOTG/Screens/addEventScreen.dart';
 import 'package:DTUOTG/Screens/authScreen.dart';
 import 'package:DTUOTG/Screens/enterDetailsScreen.dart';
 import 'package:DTUOTG/Screens/eventsDetailScreen.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: Event()),
@@ -54,7 +56,10 @@ class _MyAppState extends State<MyApp> {
         home: LoadingScreen(),
         //AuthScreen(),
         routes: {
-          '/EventsDetailScreen': (context) => EventsDetailScreen(),
+          'AddEventScreen': (context) => AddEventScreen(),
+          '/EventsDetailScreen': (context) => EventsDetailScreen(
+                key: _scaffoldKey,
+              ),
           '/AuthScreen': (context) => AuthScreen(),
           '/EnterDetailsScreen': (context) => EnterDetailsScreen(),
           '/TabsScreen': (context) => TabsScreen()

@@ -1,5 +1,6 @@
 import 'package:DTUOTG/models/events.dart';
 import 'package:DTUOTG/models/screenArguments.dart';
+import 'package:DTUOTG/providers/server_connection_functions.dart';
 import 'package:flutter/material.dart';
 //import 'package:path/path.dart' as path; //otherwise context error
 import 'package:provider/provider.dart';
@@ -24,49 +25,52 @@ class _HomeTabState extends State<HomeTab> {
   bool eventsInitialized = false;
   List<Event> eves = [];
 
-  List<Event> sheduled = [];
-
+  List<Event> sheduled = []; ////not implemented globally...only on home tab
+  var functions = Server_Connection_Functions();
   @override
   void didChangeDependencies() async {
     if (!eventsInitialized) {
-      var lastRefreshedTime =
-          Provider.of<EventsData>(context, listen: false).getLastRefreshed();
-      int x = DateTime.now().difference(lastRefreshedTime).inSeconds;
-      print('/////////////diff x$x');
-      if (x > 10) {
-        var accessToken =
-            Provider.of<AccessTokenData>(context, listen: false).accessToken;
-        var accessTokenValue = accessToken[0];
-        Map<String, String> headersEvents = {
-          "Content-type": "application/json",
-          "accept": "application/json",
-          "Authorization": "Bearer $accessTokenValue"
-        };
-        http.Response response = await http.get(
-          Uri.https('dtu-otg.herokuapp.com', 'events'),
-          headers: headersEvents,
-        );
-        int statusCode = response.statusCode;
-        List<dynamic> resp = json.decode(response.body);
-        eves = resp.map<Event>((e) {
-          return Event(
-            favorite: e['registered'],
-            name: e['name'],
-            owner: e['owner'],
-            id: e['id'],
-            eventType: e['type_event'],
-            dateime: DateTime.parse(e['date_time']),
-          );
-        }).toList();
-        Provider.of<EventsData>(context, listen: false).setEvents(eves);
-        print(resp);
-      }
+      await functions.fetchListOfEvents(context);
+      eves = Provider.of<EventsData>(context, listen: false).events;
+      // var lastRefreshedTime =
+      //     Provider.of<EventsData>(context, listen: false).getLastRefreshed();
+      // int x = DateTime.now().difference(lastRefreshedTime).inSeconds;
+      //   print('/////////////diff x$x');
+      // if (x > 10) {
+      //   var accessToken =
+      //       Provider.of<AccessTokenData>(context, listen: false).accessToken;
+      //   var accessTokenValue = accessToken[0];
+      //   Map<String, String> headersEvents = {
+      //     "Content-type": "application/json",
+      //     "accept": "application/json",
+      //     "Authorization": "Bearer $accessTokenValue"
+      //   };
+      //   http.Response response = await http.get(
+      //     Uri.https('dtu-otg.herokuapp.com', 'events'),
+      //     headers: headersEvents,
+      //   );
+      //   int statusCode = response.statusCode;
+      //   List<dynamic> resp = json.decode(response.body);
+      //   eves = resp.map<Event>((e) {
+      //     return Event(
+      //       favorite: e['registered'],
+      //       name: e['name'],
+      //       owner: e['owner'],
+      //       id: e['id'],
+      //       eventType: e['type_event'],
+      //       dateime: DateTime.parse(e['date_time']),
+      //     );
+      //   }).toList();
+      //   Provider.of<EventsData>(context, listen: false).setEvents(eves);
+      //   print(resp);
+      // }
+      sheduled = [];
       eves.forEach((element) {
         if (element.favorite) {
           sheduled.add(element);
         }
       });
-      Provider.of<EventsData>(context, listen: false).setLastRefreshed();
+      //  Provider.of<EventsData>(context, listen: false).setLastRefreshed();
       setState(() {
         eventsInitialized = true;
       });
@@ -78,6 +82,15 @@ class _HomeTabState extends State<HomeTab> {
 
   @override
   Widget build(BuildContext context) {
+    var _addEventButton = new FloatingActionButton.extended(
+      onPressed: () {
+        print('.floating action button');
+        Navigator.of(context).pushNamed('AddEventScreen');
+      },
+      label: Text('add'),
+      icon: Icon(Icons.add),
+    );
+
     return Container(
       child: Column(
         children: [
@@ -96,13 +109,15 @@ class _HomeTabState extends State<HomeTab> {
                 //       (((widget.height * 0.3) - widget.statusBarHeight) * 0.10),
                 // ),
                 ToggleSwitch(
+                  minWidth: 150,
+                  cornerRadius: 25,
                   initialLabelIndex: events0Schedule1,
                   onToggle: (index) {
                     setState(() {
                       events0Schedule1 = index;
                     });
                   },
-                  labels: ['events', 'shedule'],
+                  labels: ['events', 'schedule'],
                   activeBgColor: Colors.black,
                   activeFgColor: Colors.amber,
                   inactiveFgColor: Colors.white,
@@ -124,40 +139,86 @@ class _HomeTabState extends State<HomeTab> {
               width: double.infinity,
               child: Center(
                 child: events0Schedule1 == 0
-                    ? Container(
-                        child: eventsInitialized
-                            ? ListView.builder(
-                                itemCount: Provider.of<EventsData>(context)
-                                    .events
-                                    .length,
-                                itemBuilder: (context, index) {
-                                  var events =
-                                      Provider.of<EventsData>(context).events;
-                                  return ListTile(
-                                    tileColor: events[index].favorite
-                                        ? Colors.redAccent
-                                        : Colors.blueGrey[900],
-                                    onTap: () {
-                                      Navigator.of(context).pushNamed(
-                                          '/EventsDetailScreen',
-                                          arguments: ScreenArguments(
-                                              id: events[index].id));
+                    ? Stack(
+                        children: [
+                          Container(
+                            child: eventsInitialized
+                                ? RefreshIndicator(
+                                    onRefresh: () async {
+                                      setState(() {
+                                        eventsInitialized = false;
+                                      });
+                                      await functions
+                                          .fetchListOfEvents(context);
+                                      eves = Provider.of<EventsData>(context,
+                                              listen: false)
+                                          .events;
+                                      sheduled = [];
+                                      eves.forEach((element) {
+                                        if (element.favorite) {
+                                          sheduled.add(element);
+                                        }
+                                      });
+                                      setState(() {
+                                        eventsInitialized = true;
+                                      });
                                     },
-                                    subtitle: Text(
-                                      events[index].eventType,
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    leading: Icon(
-                                      Icons.ac_unit,
-                                      color: Colors.blue,
-                                    ),
-                                    title: Text(
-                                      events[index].name,
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  );
-                                })
-                            : CircularProgressIndicator(),
+                                    child: ListView.builder(
+                                        itemCount:
+                                            Provider.of<EventsData>(context)
+                                                .events
+                                                .length,
+                                        itemBuilder: (context, index) {
+                                          var events =
+                                              Provider.of<EventsData>(context)
+                                                  .events;
+                                          return ListTile(
+                                            tileColor: events[index].favorite
+                                                ? Colors.redAccent
+                                                : Colors.blueGrey[900],
+                                            onTap: () {
+                                              Navigator.of(context).pushNamed(
+                                                  '/EventsDetailScreen',
+                                                  arguments: ScreenArguments(
+                                                      id: events[index].id,
+                                                      scf: functions,
+                                                      context: context));
+                                            },
+                                            subtitle: Text(
+                                              events[index].eventType,
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            leading: Icon(
+                                              Icons.ac_unit,
+                                              color: Colors.blue,
+                                            ),
+                                            title: Text(
+                                              events[index].name,
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          );
+                                        }),
+                                  )
+                                : Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'loading events  ',
+                                        style: TextStyle(color: Colors.amber),
+                                      ),
+                                      CircularProgressIndicator(),
+                                    ],
+                                  ),
+                          ),
+                          if (eventsInitialized)
+                            Positioned(
+                              child: _addEventButton,
+                              bottom: 20,
+                              right: 20,
+                            ),
+                        ],
                       )
                     : Container(
                         child: !eventsInitialized

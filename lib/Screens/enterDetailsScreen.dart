@@ -18,7 +18,7 @@ class EnterDetailsScreen extends StatefulWidget {
 }
 
 class _EnterDetailsScreenState extends State<EnterDetailsScreen> {
-  bool initialized = false;
+  //bool initialized = false;
   int rollNum;
   int year;
   String _myBranch;

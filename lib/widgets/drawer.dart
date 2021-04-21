@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/info_provider.dart';
 
 class Drawer extends StatelessWidget {
   final statusBarHeight;
@@ -12,7 +14,18 @@ class Drawer extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              height: 300,
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text(
+                        '${Provider.of<UsernameData>(context, listen: false).username[0]}'),
+                    leading: Icon(
+                      Icons.account_circle,
+                      color: Colors.blueGrey[900],
+                    ),
+                  )
+                ],
+              ),
               color: Colors.white,
             )
           ],

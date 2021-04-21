@@ -51,12 +51,17 @@ class _TabsScreenState extends State<TabsScreen> {
   int _selectedPageIndex = 2;
   List<Map<String, Widget>> _pages;
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
+    Provider.of<UsernameData>(context, listen: false)
+        .fetchAndSetData(); //can't use await here...if necessary use future builder in your widget
+
+    //
     if (!initialized) {
       var mediaQueryData = MediaQuery.of(context);
       var totalHeight = mediaQueryData.size.height;
       var bottomNavigationBarHeight = mediaQueryData.padding.bottom;
       var statusBarHeight = mediaQueryData.padding.top;
+
       _pages = [
         {
           'page': HomeTab(
@@ -98,23 +103,23 @@ class _TabsScreenState extends State<TabsScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    _pages = [
-      {
-        'page': HomeTab(),
-      },
-      {
-        'page': HomeTab(),
-      },
-      {
-        'page': HomeTab(),
-      },
-      {
-        'page': HomeTab(),
-      },
-      {
-        'page': HomeTab(),
-      }
-    ]; //you can use 'widget.' in build method but not outside..
+    // _pages = [
+    //   {
+    //     'page': HomeTab(),
+    //   },
+    //   {
+    //     'page': HomeTab(),
+    //   },
+    //   {
+    //     'page': HomeTab(),
+    //   },
+    //   {
+    //     'page': HomeTab(),
+    //   },
+    //   {
+    //     'page': HomeTab(),
+    //   }
+    // ]; //you can use 'widget.' in build method but not outside..
     //and you cant create variables in initState..
     //you can only assign values to the non final variables here..like _pages
     // TODO: implement initState
@@ -136,6 +141,7 @@ class _TabsScreenState extends State<TabsScreen> {
     var totalHeight = mediaQueryData.size.height;
     var bottomNavigationBarHeight = mediaQueryData.padding.bottom;
     var statusBarHeight = mediaQueryData.padding.top;
+
     return Scaffold(
       key: _drawerKey,
       drawer: Drawer(
