@@ -56,6 +56,9 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 Map<String, dynamic> resp = await scf.createEvent(args.context,
                     name.text, description.text, type, dateTime, timeOfDay);
                 scf.fetchListOfEvents(args.context);
+                // if (resp["status"] == "OK") {
+                //   Navigator.of(context).pop();
+                // }
                 showDialog(
                     context: args.context,
                     builder: (context) {

@@ -189,14 +189,14 @@ class _EnterDetailsScreenState extends State<EnterDetailsScreen> {
                   value: _myBranch,
                   onSaved: (value) {
                     Provider.of<ProfileData>(context, listen: false)
-                        .setBranch(_myBranch);
+                        .setBranch(value);
                     setState(() {
                       _myBranch = value;
                     });
                   },
                   onChanged: (value) {
                     Provider.of<ProfileData>(context, listen: false)
-                        .setBranch(_myBranch);
+                        .setBranch(value);
                     setState(() {
                       _myBranch = value;
                     });
@@ -280,14 +280,14 @@ class _EnterDetailsScreenState extends State<EnterDetailsScreen> {
                   value: _myBatch,
                   onSaved: (value) {
                     Provider.of<ProfileData>(context, listen: false)
-                        .setBatch(_myBatch);
+                        .setBatch(value);
                     setState(() {
                       _myBatch = value;
                     });
                   },
                   onChanged: (value) {
                     Provider.of<ProfileData>(context, listen: false)
-                        .setBatch(_myBatch);
+                        .setBatch(value);
                     setState(() {
                       _myBatch = value;
                     });
