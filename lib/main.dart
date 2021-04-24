@@ -27,6 +27,8 @@ class _MyAppState extends State<MyApp> {
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: OwnerIdData()),
+        ChangeNotifierProvider.value(value: AddEventScreenData()),
         ChangeNotifierProvider.value(value: Event()),
         ChangeNotifierProvider.value(value: EventsData()),
         ChangeNotifierProvider.value(value: UsernameData()),

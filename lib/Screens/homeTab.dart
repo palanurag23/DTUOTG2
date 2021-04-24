@@ -23,7 +23,7 @@ int events0Schedule1 = 0;
 
 class _HomeTabState extends State<HomeTab> {
   bool eventsInitialized = false;
-  List<Event> eves = [];
+  List<Event> evesForSchedule = [];
 
   List<Event> sheduled = []; ////not implemented globally...only on home tab
   var functions = Server_Connection_Functions();
@@ -31,7 +31,7 @@ class _HomeTabState extends State<HomeTab> {
   void didChangeDependencies() async {
     if (!eventsInitialized) {
       await functions.fetchListOfEvents(context);
-      eves = Provider.of<EventsData>(context, listen: false).events;
+      evesForSchedule = Provider.of<EventsData>(context, listen: false).events;
       // var lastRefreshedTime =
       //     Provider.of<EventsData>(context, listen: false).getLastRefreshed();
       // int x = DateTime.now().difference(lastRefreshedTime).inSeconds;
@@ -65,7 +65,7 @@ class _HomeTabState extends State<HomeTab> {
       //   print(resp);
       // }
       sheduled = [];
-      eves.forEach((element) {
+      evesForSchedule.forEach((element) {
         if (element.favorite) {
           sheduled.add(element);
         }
@@ -85,7 +85,8 @@ class _HomeTabState extends State<HomeTab> {
     var _addEventButton = new FloatingActionButton.extended(
       onPressed: () {
         print('.floating action button');
-        Navigator.of(context).pushNamed('AddEventScreen');
+        Navigator.of(context).pushNamed('AddEventScreen',
+            arguments: ScreenArguments(context: context));
       },
       label: Text('add'),
       icon: Icon(Icons.add),
@@ -150,11 +151,12 @@ class _HomeTabState extends State<HomeTab> {
                                       });
                                       await functions
                                           .fetchListOfEvents(context);
-                                      eves = Provider.of<EventsData>(context,
+                                      evesForSchedule = Provider.of<EventsData>(
+                                              context,
                                               listen: false)
                                           .events;
                                       sheduled = [];
-                                      eves.forEach((element) {
+                                      evesForSchedule.forEach((element) {
                                         if (element.favorite) {
                                           sheduled.add(element);
                                         }

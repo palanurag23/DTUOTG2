@@ -16,6 +16,19 @@ class DbHelper {
     //......................................Getting access to DB
   }
 
+  static Future<Database> dataBaseForOwnerId() async {
+    //......................................Getting access to DB
+    final dbPath = await sql.getDatabasesPath();
+    return sql.openDatabase(
+        // searches for db ,if not found,it creats db
+        path.join(dbPath, 'ownerId.db'), onCreate: (db, version) {
+      return db
+          .execute('CREATE TABLE ownerId(id TEXT PRIMARY KEY,ownerId INTEGER)');
+    }, version: 1);
+
+    //......................................Getting access to DB
+  }
+
   static Future<Database> dataBaseForAccessToken() async {
     //......................................Getting access to DB
     final dbPath = await sql.getDatabasesPath();
@@ -65,6 +78,15 @@ class DbHelper {
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
   }
 
+  static Future<void> insertOwnerId(
+    String table,
+    Map<String, Object> ownerId,
+  ) async {
+    final dbForUsername = await DbHelper.dataBaseForOwnerId();
+    dbForUsername.insert(table, ownerId,
+        conflictAlgorithm: sql.ConflictAlgorithm.replace);
+  }
+
   static Future<void> insertProfile(
     String table,
     Map<String, Object> profile,
@@ -83,6 +105,21 @@ class DbHelper {
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
   }
 
+  ///
+  ///
+  ///
+
+  static Future<int> deleteAccessTokenData(String id) async {
+    final db = await DbHelper.dataBaseForAccessToken();
+    var result =
+        await db.delete('AccessToken', where: 'id = ?', whereArgs: ['$id']);
+
+    return result;
+  }
+
+  ///
+  ///
+  ///
   static Future<List<Map<String, dynamic>>> getAccessTokenData() async {
     final db = await DbHelper.dataBaseForAccessToken();
     return db.query('AccessToken');
@@ -91,6 +128,11 @@ class DbHelper {
   static Future<List<Map<String, dynamic>>> getUsernameData() async {
     final db = await DbHelper.dataBaseForUsername();
     return db.query('username');
+  }
+
+  static Future<List<Map<String, dynamic>>> getOwnerIdData() async {
+    final db = await DbHelper.dataBaseForOwnerId();
+    return db.query('ownerId');
   }
 
   static Future<List<Map<String, dynamic>>> getProfileData() async {

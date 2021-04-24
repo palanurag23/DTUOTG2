@@ -23,7 +23,18 @@ class Drawer extends StatelessWidget {
                       Icons.account_circle,
                       color: Colors.blueGrey[900],
                     ),
-                  )
+                  ),
+                  ElevatedButton.icon(
+                      onPressed: () async {
+                        var result = await Provider.of<AccessTokenData>(context,
+                                listen: false)
+                            .deleteAccessToken();
+                        print('./////logout result $result');
+                        if (result)
+                          Navigator.of(context).pushNamed('/AuthScreen');
+                      },
+                      icon: Icon(Icons.logout),
+                      label: Text('logout'))
                 ],
               ),
               color: Colors.white,

@@ -88,6 +88,14 @@ class AccessTokenData with ChangeNotifier {
     return dateTime.isEmpty ? DateTime.now() : dateTime[0];
   }
 
+  Future<bool> deleteAccessToken() async {
+    int result = await DbHelper.deleteAccessTokenData('id');
+    if (result >= 1) {
+      return true;
+    }
+    return false;
+  }
+
   //List<String> unit = [];
   void addAccessToken(String accessToken, DateTime dateTime) async {
     this.accessToken = [accessToken];
@@ -271,5 +279,65 @@ class UsernameData with ChangeNotifier {
       print('................user name fetched and set$username');
     }
     notifyListeners();
+  }
+}
+
+//
+class OwnerIdData with ChangeNotifier {
+  List<int> ownerID = [];
+
+  void addOwnerId(int id) async {
+    this.ownerID = [id];
+
+    // DbHelper.deleteSingleHeight('id');
+    DbHelper.insertOwnerId('ownerId', {'id': 'id', 'ownerId': id});
+    notifyListeners();
+  }
+
+  Future<void> fetchAndSetData() async {
+    print('fetching ownerId');
+    var ownerIdData = await DbHelper.getOwnerIdData();
+    if (ownerIdData.isEmpty) {
+      print('....................................empty ownerid');
+    } else {
+      print(ownerIdData);
+
+      ownerID = [(ownerIdData[0]['ownerId'])];
+
+      print('................ownerID fetched and set$ownerID');
+    }
+    notifyListeners();
+  }
+}
+
+class AddEventScreenData with ChangeNotifier {
+  int hours = 1;
+  //int owner = 1;
+  int minutes = 0;
+  setHours(int hours) {
+    this.hours = hours;
+    notifyListeners();
+  }
+
+  // setOwner(int owner) {
+  //   this.owner = owner;
+  //   notifyListeners();
+  // }
+
+  setMinutes(int minutes) {
+    this.minutes = minutes;
+    notifyListeners();
+  }
+
+  // int getOwners() {
+  //   return owner;
+  // }
+
+  int getMinutes() {
+    return minutes;
+  }
+
+  int getHours() {
+    return hours;
   }
 }

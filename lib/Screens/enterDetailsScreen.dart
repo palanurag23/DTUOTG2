@@ -27,8 +27,6 @@ class _EnterDetailsScreenState extends State<EnterDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    _myBranch = '';
-    _myBatch = '';
   }
 
   final formGlobalKey = GlobalKey<FormState>();
@@ -90,13 +88,13 @@ class _EnterDetailsScreenState extends State<EnterDetailsScreen> {
                     body: json.encode(mapjsonnprofile));
                 int statusCode = response.statusCode;
                 var resp = json.decode(response.body);
-
+                print('/////////enter detail screen response $resp');
                 setState(() {
                   waiting = false;
                 });
                 if (resp["status"] != 'FAILED') {
-                  Provider.of<ProfileData>(context, listen: false)
-                      .saveSetedChanges();
+                  //   Provider.of<ProfileData>(context, listen: false)
+                  //     .saveSetedChanges();
                   Provider.of<AccessTokenData>(context, listen: false)
                       .addAccessToken(
                           Provider.of<AccessTokenData>(context, listen: false)

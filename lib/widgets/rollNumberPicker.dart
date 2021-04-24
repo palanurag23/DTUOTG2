@@ -37,8 +37,8 @@ class _RollNumberPickerState extends State<RollNumberPicker> {
   }
 
   void _initializeNumberPickers() {
-    rollNum = new NumberPicker(
-      value: rollNumber,
+    rollNum = new NumberPicker.integer(
+      initialValue: rollNumber,
       minValue: 1,
       step: 1,
       maxValue: 999,

@@ -102,4 +102,47 @@ class Server_Connection_Functions {
     print(resp);
     return true;
   }
+
+  Future<dynamic> createEvent(
+      BuildContext context,
+      String name,
+      String description,
+      int type,
+      DateTime dateTime,
+      TimeOfDay timeOfDay) async {
+    int hours =
+        Provider.of<AddEventScreenData>(context, listen: false).getHours();
+    int minutes =
+        Provider.of<AddEventScreenData>(context, listen: false).getMinutes();
+    var accessToken =
+        Provider.of<AccessTokenData>(context, listen: false).accessToken;
+    var accessTokenValue = accessToken[0];
+    await Provider.of<OwnerIdData>(context, listen: false).fetchAndSetData();
+    int owner = Provider.of<OwnerIdData>(context, listen: false).ownerID[0];
+    Map<String, String> headersCreateEvent = {
+      "Content-type": "application/json",
+      "accept": "application/json",
+      "Authorization": "Bearer $accessTokenValue"
+    };
+    DateTime date_time = DateTime(dateTime.year, dateTime.month, dateTime.day,
+        timeOfDay.hour, timeOfDay.minute);
+    Map mapjsonBody = {
+      "owner": owner,
+      "name": "$name",
+      "description": "$description",
+      "date_time": "${date_time.toIso8601String()}",
+      "duration": "$hours:$minutes:00",
+      "latitude": "27.204600000",
+      "longitude": "77.497700000",
+      "type_event": "${type.toString()}",
+      "user_registered": true
+    };
+    http.Response response = await http.post(
+        Uri.https('dtu-otg.herokuapp.com', 'events/create/'),
+        headers: headersCreateEvent,
+        body: json.encode(mapjsonBody));
+    print('///////resp CREATE EVENT  ${response.body}');
+    Map<String, dynamic> resp = json.decode(response.body);
+    return resp;
+  }
 }

@@ -322,6 +322,9 @@ class _AuthScreenState extends State<AuthScreen> {
                           setState(() {
                             waiting = false;
                             if (resp["status"] != 'FAILED') {
+                              Provider.of<OwnerIdData>(context, listen: false)
+                                  .addOwnerId(resp["user_id"]);
+
                               ///successfull login
                               print(resp["tokens"]["access"].toString());
                               print(

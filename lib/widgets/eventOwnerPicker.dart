@@ -1,18 +1,20 @@
 import 'package:DTUOTG/providers/info_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
+
 import 'package:provider/provider.dart';
 
-class YearPicker extends StatefulWidget {
+class OwnerPicker extends StatefulWidget {
+  OwnerPicker({Key key}) : super(key: key);
+
   @override
-  _YearPickerState createState() => _YearPickerState();
+  _OwnerPickerState createState() => _OwnerPickerState();
 }
 
-class _YearPickerState extends State<YearPicker> {
-  // int joiningYear;
-  NumberPicker year;
-  int initialYearValue = DateTime.now().year;
-  int joiningYear = DateTime.now().year;
+class _OwnerPickerState extends State<OwnerPicker> {
+  NumberPicker owner;
+  int currentOwner = 1;
+
   @override
   Widget build(BuildContext context) {
     _initializeNumberPickers();
@@ -20,14 +22,13 @@ class _YearPickerState extends State<YearPicker> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [Text('joining  $joiningYear'), year],
-            ),
+            Text('$currentOwner owner'),
+            owner,
             ElevatedButton(
                 onPressed: () {
-                  Provider.of<ProfileData>(context, listen: false)
-                      .setYear(joiningYear);
+                  // Provider.of<AddEventScreenData>(context, listen: false)
+                  //     .setOwner(currentOwner);
+
                   Navigator.of(context).pop();
                 },
                 child: Text('ok'))
@@ -38,14 +39,14 @@ class _YearPickerState extends State<YearPicker> {
   }
 
   void _initializeNumberPickers() {
-    year = new NumberPicker.integer(
-      initialValue: joiningYear,
-      minValue: initialYearValue - 10,
+    owner = new NumberPicker.integer(
+      initialValue: currentOwner,
+      minValue: 1,
       step: 1,
-      maxValue: initialYearValue + 10,
+      maxValue: 50,
       onChanged: (v) {
         setState(() {
-          joiningYear = v;
+          currentOwner = v;
         });
       },
     );
