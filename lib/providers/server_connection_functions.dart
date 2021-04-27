@@ -145,4 +145,24 @@ class Server_Connection_Functions {
     Map<String, dynamic> resp = json.decode(response.body);
     return resp;
   }
+
+  Future<dynamic> invite(String email, BuildContext context) async {
+    String accessToken =
+        Provider.of<AccessTokenData>(context, listen: false).getAccessToken();
+    Map<String, String> headersInvite = {
+      "Content-type": "application/json",
+      "accept": "application/json",
+      "Authorization": "Bearer $accessToken"
+    };
+    Map mapjsonBody = {"email": "$email"};
+    http.Response response = await http.post(
+        Uri.https('dtu-otg.herokuapp.com', 'auth/send-email/'),
+        headers: headersInvite,
+        body: json.encode(mapjsonBody));
+    print(json.encode(mapjsonBody));
+    int statusCode = response.statusCode;
+    print('//////status code register event $statusCode');
+    Map<String, dynamic> resp = json.decode(response.body);
+    return resp;
+  }
 }

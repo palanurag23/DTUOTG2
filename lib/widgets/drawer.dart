@@ -24,6 +24,12 @@ class Drawer extends StatelessWidget {
                       color: Colors.blueGrey[900],
                     ),
                   ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.of(context).pushNamed('inviteScreen');
+                    },
+                    title: Text('invite friend'),
+                  ),
                   ElevatedButton.icon(
                       onPressed: () async {
                         var result = await Provider.of<AccessTokenData>(context,

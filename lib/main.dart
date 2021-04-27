@@ -2,6 +2,7 @@ import 'package:DTUOTG/Screens/addEventScreen.dart';
 import 'package:DTUOTG/Screens/authScreen.dart';
 import 'package:DTUOTG/Screens/enterDetailsScreen.dart';
 import 'package:DTUOTG/Screens/eventsDetailScreen.dart';
+import 'package:DTUOTG/Screens/invite_screen.dart';
 import 'package:DTUOTG/Screens/loadingScreen.dart';
 import 'package:DTUOTG/Screens/tabsScreen.dart';
 import 'package:DTUOTG/models/events.dart';
@@ -27,6 +28,7 @@ class _MyAppState extends State<MyApp> {
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: TabsScreenContext()),
         ChangeNotifierProvider.value(value: OwnerIdData()),
         ChangeNotifierProvider.value(value: AddEventScreenData()),
         ChangeNotifierProvider.value(value: Event()),
@@ -58,6 +60,7 @@ class _MyAppState extends State<MyApp> {
         home: LoadingScreen(),
         //AuthScreen(),
         routes: {
+          'inviteScreen': (context) => InviteScreen(),
           'AddEventScreen': (context) => AddEventScreen(),
           '/EventsDetailScreen': (context) => EventsDetailScreen(
                 key: _scaffoldKey,

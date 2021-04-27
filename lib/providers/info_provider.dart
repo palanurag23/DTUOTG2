@@ -5,6 +5,19 @@ import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
 
+class TabsScreenContext with ChangeNotifier {
+  BuildContext context;
+
+  set(BuildContext tabsScreenContext) {
+    context = tabsScreenContext;
+    notifyListeners();
+  }
+
+  get() {
+    return context;
+  }
+}
+
 class EventsData with ChangeNotifier {
   DateTime lastRefreshed = DateTime(2000);
   setLastRefreshed() {
