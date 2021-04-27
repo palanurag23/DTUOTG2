@@ -174,7 +174,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   controller: description,
                   //  restorationId: 'username',
                   placeholder: 'description',
-                  keyboardType: TextInputType.emailAddress,
+                  keyboardType: TextInputType.multiline,
                   //   clearButtonMode: OverlayVisibilityMode.editing,
                   obscureText: false,
                   autocorrect: false,
