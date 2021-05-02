@@ -141,7 +141,6 @@ class _TabsScreenState extends State<TabsScreen> {
     var totalHeight = mediaQueryData.size.height;
     var bottomNavigationBarHeight = mediaQueryData.padding.bottom;
     var statusBarHeight = mediaQueryData.padding.top;
-    Provider.of<TabsScreenContext>(context, listen: false).set(context);
     return Scaffold(
       key: _drawerKey,
       drawer: Drawer(

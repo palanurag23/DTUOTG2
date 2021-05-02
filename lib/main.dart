@@ -7,6 +7,7 @@ import 'package:DTUOTG/Screens/loadingScreen.dart';
 import 'package:DTUOTG/Screens/tabsScreen.dart';
 import 'package:DTUOTG/models/events.dart';
 import 'package:DTUOTG/providers/info_provider.dart';
+import 'package:DTUOTG/providers/server_connection_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,7 +29,8 @@ class _MyAppState extends State<MyApp> {
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(value: TabsScreenContext()),
+        ChangeNotifierProvider.value(
+            value: Server_Connection_Functions_globalObject(context)),
         ChangeNotifierProvider.value(value: OwnerIdData()),
         ChangeNotifierProvider.value(value: AddEventScreenData()),
         ChangeNotifierProvider.value(value: Event()),

@@ -52,10 +52,13 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   name != null &&
                   description != null &&
                   type != null) {
-                var scf = Server_Connection_Functions();
-                Map<String, dynamic> resp = await scf.createEvent(args.context,
+                var scf = Provider.of<Server_Connection_Functions_globalObject>(
+                        context,
+                        listen: false)
+                    .serverConnectionFunctions;
+                Map<String, dynamic> resp = await scf.createEvent(
                     name.text, description.text, type, dateTime, timeOfDay);
-                scf.fetchListOfEvents(args.context);
+                scf.fetchListOfEvents();
                 // if (resp["status"] == "OK") {
                 //   Navigator.of(context).pop();
                 // }

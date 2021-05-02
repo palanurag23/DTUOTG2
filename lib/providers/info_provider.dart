@@ -1,20 +1,19 @@
 import 'package:DTUOTG/models/events.dart';
+import 'package:DTUOTG/providers/server_connection_functions.dart';
 
 import '../helper/db_helper.dart';
 import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
 
-class TabsScreenContext with ChangeNotifier {
-  BuildContext context;
-
-  set(BuildContext tabsScreenContext) {
-    context = tabsScreenContext;
-    notifyListeners();
+class Server_Connection_Functions_globalObject with ChangeNotifier {
+  BuildContext _context;
+  Server_Connection_Functions serverConnectionFunctions;
+  Server_Connection_Functions_globalObject(this._context) {
+    serverConnectionFunctions = Server_Connection_Functions(_context);
   }
-
   get() {
-    return context;
+    return serverConnectionFunctions;
   }
 }
 

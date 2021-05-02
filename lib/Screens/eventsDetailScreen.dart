@@ -24,8 +24,12 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
   Map<String, dynamic> resp;
   EventDetails _eventDetails;
   ScreenArguments args;
+  scf.Server_Connection_Functions functions;
   @override
   void didChangeDependencies() async {
+    functions = Provider.of<Server_Connection_Functions_globalObject>(context,
+            listen: false)
+        .serverConnectionFunctions;
     args = ModalRoute.of(context).settings.arguments;
     int eventID = args.id;
     if (!initialized) {
@@ -114,12 +118,10 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
                       ListTile(
                         onTap: () async {
                           bool registered = _eventDetails.registered
-                              ? await scf.Server_Connection_Functions()
-                                  .unregisterForEvent(
-                                      _eventDetails.id, args.context)
-                              : await scf.Server_Connection_Functions()
-                                  .registerForEvent(
-                                      _eventDetails.id, args.context);
+                              ? await functions
+                                  .unregisterForEvent(_eventDetails.id)
+                              : await functions
+                                  .registerForEvent(_eventDetails.id);
                           // if (_eventDetails.registered != registered) {
                           //   //still not being added or removed from schedule
                           //   Provider.of<EventsData>(args.context, listen: false)

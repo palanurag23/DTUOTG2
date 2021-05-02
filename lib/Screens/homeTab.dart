@@ -26,11 +26,15 @@ class _HomeTabState extends State<HomeTab> {
   List<Event> evesForSchedule = [];
 
   List<Event> sheduled = []; ////not implemented globally...only on home tab
-  var functions = Server_Connection_Functions();
+  var functions;
   @override
   void didChangeDependencies() async {
     if (!eventsInitialized) {
-      await functions.fetchListOfEvents(context);
+      functions = Provider.of<Server_Connection_Functions_globalObject>(context,
+              listen: false)
+          .serverConnectionFunctions;
+      await functions.fetchListOfEvents();
+      await functions.timeTableDownload();
       evesForSchedule = Provider.of<EventsData>(context, listen: false).events;
       // var lastRefreshedTime =
       //     Provider.of<EventsData>(context, listen: false).getLastRefreshed();
@@ -149,8 +153,7 @@ class _HomeTabState extends State<HomeTab> {
                                       setState(() {
                                         eventsInitialized = false;
                                       });
-                                      await functions
-                                          .fetchListOfEvents(context);
+                                      await functions.fetchListOfEvents();
                                       evesForSchedule = Provider.of<EventsData>(
                                               context,
                                               listen: false)
@@ -182,9 +185,9 @@ class _HomeTabState extends State<HomeTab> {
                                               Navigator.of(context).pushNamed(
                                                   '/EventsDetailScreen',
                                                   arguments: ScreenArguments(
-                                                      id: events[index].id,
-                                                      scf: functions,
-                                                      context: context));
+                                                    id: events[index].id,
+                                                    scf: functions,
+                                                  ));
                                             },
                                             subtitle: Text(
                                               events[index].eventType,
