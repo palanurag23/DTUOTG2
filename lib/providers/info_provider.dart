@@ -1,19 +1,32 @@
 import 'package:DTUOTG/models/events.dart';
+import 'package:DTUOTG/models/lecture.dart';
 import 'package:DTUOTG/providers/server_connection_functions.dart';
-
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:time_range_picker/time_range_picker.dart';
 import '../helper/db_helper.dart';
 import 'dart:convert';
-
 import 'package:flutter/widgets.dart';
+import 'dart:core';
+import 'package:time_range_picker/time_range_picker.dart';
 
-class Server_Connection_Functions_globalObject with ChangeNotifier {
-  BuildContext _context;
-  Server_Connection_Functions serverConnectionFunctions;
-  Server_Connection_Functions_globalObject(this._context) {
-    serverConnectionFunctions = Server_Connection_Functions(_context);
-  }
+class SCF {
+  Server_Connection_Functions scf;
+  SCF(this.scf);
   get() {
-    return serverConnectionFunctions;
+    return scf;
+  }
+}
+
+class TabsScreenContext with ChangeNotifier {
+  BuildContext _context;
+
+  set(BuildContext tabsScreenContext) {
+    _context = tabsScreenContext;
+  }
+
+  get() {
+    return _context;
   }
 }
 
@@ -351,5 +364,57 @@ class AddEventScreenData with ChangeNotifier {
 
   int getHours() {
     return hours;
+  }
+}
+
+class TimeTableData with ChangeNotifier {
+  Map<String, dynamic> resp = {};
+  List<Lecture> _lectures = [];
+  List<Lecture> get() => _lectures;
+  int weekDay = DateTime.now().weekday;
+  List<String> weekDays = ['MON', 'TUE', 'WED', 'THU', 'FRI'];
+  set(Map<String, dynamic> resp) async {
+    this.resp = resp;
+    Map<String, dynamic> todaysMap;
+    List<int> hour = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+    Map<int, String> times = {
+      8: '8-9',
+      9: '9-10',
+      10: '10-11',
+      11: '11-12',
+      12: '12-1',
+      13: '1-2',
+      14: '2-3',
+      15: '3-4',
+      16: '4-5',
+      17: '5-6'
+    };
+    List x = resp['MON']['11-12'];
+    //
+
+    if (weekDay <= 5) {
+      todaysMap = weekDay > 5 ? {} : resp[weekDays[weekDay - 1]];
+      print('${weekDays[weekDay - 1]} $todaysMap');
+      int i;
+      for (i = 0; i < 10; i++) {
+        var x = todaysMap[times[hour[i]]];
+        x == null
+            ? _lectures.add(
+                Lecture(free: true, time: TimeOfDay(hour: 8 + i, minute: 0)))
+            : _lectures.add(Lecture(
+                free: false,
+                length: x[1],
+                name: x[0],
+                time: TimeOfDay(hour: hour[i], minute: 0)));
+        print('${_lectures[i].free}');
+      }
+    } else {}
+    //
+
+    String lecture = x == null ? 'null' : x[0];
+    int hours = x == null ? 'null' : x[1];
+    int currentHour = DateTime.now().hour;
+    print('hour $currentHour key ${times[currentHour]}');
+    print("lectue $lecture hours $hours");
   }
 }

@@ -54,20 +54,20 @@ class _TabsScreenState extends State<TabsScreen> {
   void didChangeDependencies() async {
     Provider.of<UsernameData>(context, listen: false)
         .fetchAndSetData(); //can't use await here...if necessary use future builder in your widget
-
+    var ht;
     //
     if (!initialized) {
       var mediaQueryData = MediaQuery.of(context);
       var totalHeight = mediaQueryData.size.height;
       var bottomNavigationBarHeight = mediaQueryData.padding.bottom;
       var statusBarHeight = mediaQueryData.padding.top;
-
+      ht = HomeTab(
+        statusBarHeight: statusBarHeight,
+        height: totalHeight - bottomNavigationBarHeight,
+      );
       _pages = [
         {
-          'page': HomeTab(
-            statusBarHeight: statusBarHeight,
-            height: totalHeight - bottomNavigationBarHeight,
-          ),
+          'page': ht,
         },
         {
           'page': HomeTab(
@@ -76,22 +76,13 @@ class _TabsScreenState extends State<TabsScreen> {
           ),
         },
         {
-          'page': HomeTab(
-            statusBarHeight: statusBarHeight,
-            height: totalHeight - bottomNavigationBarHeight,
-          ),
+          'page': ht,
         },
         {
-          'page': HomeTab(
-            statusBarHeight: statusBarHeight,
-            height: totalHeight - bottomNavigationBarHeight,
-          ),
+          'page': ht,
         },
         {
-          'page': HomeTab(
-            statusBarHeight: statusBarHeight,
-            height: totalHeight - bottomNavigationBarHeight,
-          ),
+          'page': ht,
         }
       ];
       initialized = false;
@@ -141,6 +132,7 @@ class _TabsScreenState extends State<TabsScreen> {
     var totalHeight = mediaQueryData.size.height;
     var bottomNavigationBarHeight = mediaQueryData.padding.bottom;
     var statusBarHeight = mediaQueryData.padding.top;
+    Provider.of<TabsScreenContext>(context, listen: false).set(context);
     return Scaffold(
       key: _drawerKey,
       drawer: Drawer(

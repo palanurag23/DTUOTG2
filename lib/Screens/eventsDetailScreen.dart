@@ -7,7 +7,6 @@ import '../providers/info_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/events.dart';
-import '../providers/server_connection_functions.dart' as scf;
 
 class EventsDetailScreen extends StatefulWidget {
   static const routeName = '/EventsDetailScreen';
@@ -24,12 +23,8 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
   Map<String, dynamic> resp;
   EventDetails _eventDetails;
   ScreenArguments args;
-  scf.Server_Connection_Functions functions;
   @override
   void didChangeDependencies() async {
-    functions = Provider.of<Server_Connection_Functions_globalObject>(context,
-            listen: false)
-        .serverConnectionFunctions;
     args = ModalRoute.of(context).settings.arguments;
     int eventID = args.id;
     if (!initialized) {
@@ -117,11 +112,17 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
                       ),
                       ListTile(
                         onTap: () async {
+                          BuildContext bc = Provider.of<TabsScreenContext>(
+                                  context,
+                                  listen: false)
+                              .get();
+                          var scf =
+                              Provider.of<SCF>(context, listen: false).get();
                           bool registered = _eventDetails.registered
-                              ? await functions
-                                  .unregisterForEvent(_eventDetails.id)
-                              : await functions
-                                  .registerForEvent(_eventDetails.id);
+                              ? await scf.unregisterForEvent(
+                                  _eventDetails.id, bc)
+                              : await scf.registerForEvent(
+                                  _eventDetails.id, bc);
                           // if (_eventDetails.registered != registered) {
                           //   //still not being added or removed from schedule
                           //   Provider.of<EventsData>(args.context, listen: false)

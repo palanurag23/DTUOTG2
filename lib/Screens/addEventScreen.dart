@@ -38,7 +38,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
   Duration _duration = Duration(hours: 0, minutes: 0);
   @override
   Widget build(BuildContext context) {
-    ScreenArguments args = ModalRoute.of(context).settings.arguments;
+    BuildContext bc =
+        Provider.of<TabsScreenContext>(context, listen: false).get();
     var data = Provider.of<AddEventScreenData>(context, listen: true);
     return Scaffold(
       persistentFooterButtons: [
@@ -52,18 +53,15 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   name != null &&
                   description != null &&
                   type != null) {
-                var scf = Provider.of<Server_Connection_Functions_globalObject>(
-                        context,
-                        listen: false)
-                    .serverConnectionFunctions;
+                var scf = Provider.of<SCF>(context, listen: false).get();
                 Map<String, dynamic> resp = await scf.createEvent(
-                    name.text, description.text, type, dateTime, timeOfDay);
-                scf.fetchListOfEvents();
+                    bc, name.text, description.text, type, dateTime, timeOfDay);
+                scf.fetchListOfEvents(bc);
                 // if (resp["status"] == "OK") {
                 //   Navigator.of(context).pop();
                 // }
                 showDialog(
-                    context: args.context,
+                    context: bc,
                     builder: (context) {
                       return Dialog(
                         child: Padding(

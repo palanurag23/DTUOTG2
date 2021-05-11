@@ -7,17 +7,14 @@ import '../providers/info_provider.dart';
 //import 'package:path/path.dart' as path; //otherwise context error
 
 class Server_Connection_Functions {
-  BuildContext myAppContext;
-  Server_Connection_Functions(this.myAppContext);
-
   Future<bool> registerForEvent(
     int eventId,
+    BuildContext context,
   ) async {
     String username =
-        Provider.of<UsernameData>(myAppContext, listen: false).username[0];
+        Provider.of<UsernameData>(context, listen: false).username[0];
     String accessToken =
-        Provider.of<AccessTokenData>(myAppContext, listen: false)
-            .getAccessToken();
+        Provider.of<AccessTokenData>(context, listen: false).getAccessToken();
     Map<String, String> headersRegisterEvent = {
       "Content-type": "application/json",
       "accept": "application/json",
@@ -38,17 +35,16 @@ class Server_Connection_Functions {
     print(response.body);
     Map<String, dynamic> resp = json.decode(response.body);
     if (resp['status'] == "OK")
-      Provider.of<EventsData>(myAppContext, listen: false)
+      Provider.of<EventsData>(context, listen: false)
           .changeFavoriteStatus(eventId);
     return resp['status'] == "OK" ? true : false; //return registration status
   }
 
-  Future<bool> unregisterForEvent(int eventId) async {
+  Future<bool> unregisterForEvent(int eventId, BuildContext context) async {
     String username =
-        Provider.of<UsernameData>(myAppContext, listen: false).username[0];
+        Provider.of<UsernameData>(context, listen: false).username[0];
     String accessToken =
-        Provider.of<AccessTokenData>(myAppContext, listen: false)
-            .getAccessToken();
+        Provider.of<AccessTokenData>(context, listen: false).getAccessToken();
     Map<String, String> headersUnregisterEvent = {
       "Content-type": "application/json",
       "accept": "application/json",
@@ -69,17 +65,17 @@ class Server_Connection_Functions {
     print(response.body);
     Map<String, dynamic> resp = json.decode(response.body);
     if (resp['status'] == "OK")
-      Provider.of<EventsData>(myAppContext, listen: false)
+      Provider.of<EventsData>(context, listen: false)
           .changeFavoriteStatus(eventId);
     return resp['status'] == "OK"
         ? false
         : true; //return registration status not unregistration status
   }
 
-  Future<bool> fetchListOfEvents() async {
+  Future<bool> fetchListOfEvents(BuildContext context) async {
     List<Event> eves = [];
     var accessToken =
-        Provider.of<AccessTokenData>(myAppContext, listen: false).accessToken;
+        Provider.of<AccessTokenData>(context, listen: false).accessToken;
     var accessTokenValue = accessToken[0];
     Map<String, String> headersEvents = {
       "Content-type": "application/json",
@@ -102,24 +98,27 @@ class Server_Connection_Functions {
         dateime: DateTime.parse(e['date_time']),
       );
     }).toList();
-    Provider.of<EventsData>(myAppContext, listen: false).setEvents(eves);
+    Provider.of<EventsData>(context, listen: false).setEvents(eves);
     print(resp);
     return true;
   }
 
-  Future<dynamic> createEvent(String name, String description, int type,
-      DateTime dateTime, TimeOfDay timeOfDay) async {
+  Future<dynamic> createEvent(
+      BuildContext context,
+      String name,
+      String description,
+      int type,
+      DateTime dateTime,
+      TimeOfDay timeOfDay) async {
     int hours =
-        Provider.of<AddEventScreenData>(myAppContext, listen: false).getHours();
-    int minutes = Provider.of<AddEventScreenData>(myAppContext, listen: false)
-        .getMinutes();
+        Provider.of<AddEventScreenData>(context, listen: false).getHours();
+    int minutes =
+        Provider.of<AddEventScreenData>(context, listen: false).getMinutes();
     var accessToken =
-        Provider.of<AccessTokenData>(myAppContext, listen: false).accessToken;
+        Provider.of<AccessTokenData>(context, listen: false).accessToken;
     var accessTokenValue = accessToken[0];
-    await Provider.of<OwnerIdData>(myAppContext, listen: false)
-        .fetchAndSetData();
-    int owner =
-        Provider.of<OwnerIdData>(myAppContext, listen: false).ownerID[0];
+    await Provider.of<OwnerIdData>(context, listen: false).fetchAndSetData();
+    int owner = Provider.of<OwnerIdData>(context, listen: false).ownerID[0];
     Map<String, String> headersCreateEvent = {
       "Content-type": "application/json",
       "accept": "application/json",
@@ -147,12 +146,9 @@ class Server_Connection_Functions {
     return resp;
   }
 
-  Future<dynamic> invite(
-    String email,
-  ) async {
+  Future<dynamic> invite(String email, BuildContext context) async {
     String accessToken =
-        Provider.of<AccessTokenData>(myAppContext, listen: false)
-            .getAccessToken();
+        Provider.of<AccessTokenData>(context, listen: false).getAccessToken();
     Map<String, String> headersInvite = {
       "Content-type": "application/json",
       "accept": "application/json",
@@ -170,9 +166,10 @@ class Server_Connection_Functions {
     return resp;
   }
 
-  Future<Map<String, dynamic>> timeTableDownload() async {
+  //
+  Future<Map<String, dynamic>> timeTableDownload(BuildContext context) async {
     var accessToken =
-        Provider.of<AccessTokenData>(myAppContext, listen: false).accessToken;
+        Provider.of<AccessTokenData>(context, listen: false).accessToken;
     var accessTokenValue = accessToken[0];
     print('1');
 
@@ -193,11 +190,10 @@ class Server_Connection_Functions {
     Map<String, dynamic> resp = json.decode(json.decode(response.body));
     print(statusCode);
     print(resp.toString());
-    DateTime.now().weekday;
+    print('${DateTime.now().weekday}weekday');
     //
-    List x = resp['MON']['2-3'];
-    String i = x == null ? 'null' : x[0];
-    print(i);
+    await Provider.of<TimeTableData>(context, listen: false).set(resp);
+
     //
     return resp;
   }

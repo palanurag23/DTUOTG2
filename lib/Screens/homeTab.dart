@@ -1,4 +1,5 @@
 import 'package:DTUOTG/models/events.dart';
+import 'package:DTUOTG/models/lecture.dart';
 import 'package:DTUOTG/models/screenArguments.dart';
 import 'package:DTUOTG/providers/server_connection_functions.dart';
 import 'package:flutter/material.dart';
@@ -24,17 +25,18 @@ int events0Schedule1 = 0;
 class _HomeTabState extends State<HomeTab> {
   bool eventsInitialized = false;
   List<Event> evesForSchedule = [];
-
+  List<Lecture> lectures = [];
   List<Event> sheduled = []; ////not implemented globally...only on home tab
-  var functions;
+  var scf;
+  BuildContext bc;
   @override
   void didChangeDependencies() async {
+    print('home init');
     if (!eventsInitialized) {
-      functions = Provider.of<Server_Connection_Functions_globalObject>(context,
-              listen: false)
-          .serverConnectionFunctions;
-      await functions.fetchListOfEvents();
-      await functions.timeTableDownload();
+      scf = Provider.of<SCF>(context, listen: false).get();
+      bc = Provider.of<TabsScreenContext>(context, listen: false).get();
+      await scf.fetchListOfEvents(bc);
+      await scf.timeTableDownload(bc);
       evesForSchedule = Provider.of<EventsData>(context, listen: false).events;
       // var lastRefreshedTime =
       //     Provider.of<EventsData>(context, listen: false).getLastRefreshed();
@@ -68,6 +70,7 @@ class _HomeTabState extends State<HomeTab> {
       //   Provider.of<EventsData>(context, listen: false).setEvents(eves);
       //   print(resp);
       // }
+      lectures = Provider.of<TimeTableData>(context, listen: false).get();
       sheduled = [];
       evesForSchedule.forEach((element) {
         if (element.favorite) {
@@ -86,11 +89,13 @@ class _HomeTabState extends State<HomeTab> {
 
   @override
   Widget build(BuildContext context) {
+    print('home');
     var _addEventButton = new FloatingActionButton.extended(
       onPressed: () {
         print('.floating action button');
-        Navigator.of(context).pushNamed('AddEventScreen',
-            arguments: ScreenArguments(context: context));
+        Navigator.of(context).pushNamed(
+          'AddEventScreen',
+        );
       },
       label: Text('add'),
       icon: Icon(Icons.add),
@@ -153,7 +158,7 @@ class _HomeTabState extends State<HomeTab> {
                                       setState(() {
                                         eventsInitialized = false;
                                       });
-                                      await functions.fetchListOfEvents();
+                                      await scf.fetchListOfEvents(bc);
                                       evesForSchedule = Provider.of<EventsData>(
                                               context,
                                               listen: false)
@@ -185,9 +190,9 @@ class _HomeTabState extends State<HomeTab> {
                                               Navigator.of(context).pushNamed(
                                                   '/EventsDetailScreen',
                                                   arguments: ScreenArguments(
-                                                    id: events[index].id,
-                                                    scf: functions,
-                                                  ));
+                                                      id: events[index].id,
+                                                      scf: scf,
+                                                      context: context));
                                             },
                                             subtitle: Text(
                                               events[index].eventType,
@@ -228,22 +233,65 @@ class _HomeTabState extends State<HomeTab> {
                     : Container(
                         child: !eventsInitialized
                             ? CircularProgressIndicator()
-                            : ListView.builder(
-                                itemBuilder: (context, index) {
-                                  print('///////${sheduled.length}');
-                                  return ListTile(
-                                    subtitle: Text(
-                                      '${sheduled[index].dateime.toString()}',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    title: Text(
-                                      '${sheduled[index].name}',
-                                      style: TextStyle(color: Colors.amber),
-                                    ),
-                                  );
-                                },
-                                itemCount: sheduled.length,
-                              )),
+                            : lectures.isEmpty
+                                ? Text('empty')
+                                : ListView.builder(
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(2.0),
+                                        child: ListTile(
+                                            leading: lectures[index]
+                                                        .time
+                                                        .hour ==
+                                                    TimeOfDay.now().hour
+                                                ? Icon(Icons.border_color)
+                                                : Icon(
+                                                    Icons.access_time_outlined),
+                                            subtitle: Text(
+                                                '${lectures[index].time.hour}-${lectures[index].time.hour + 1}'),
+                                            tileColor: lectures[index].free
+                                                ? Colors.red
+                                                : lectures[index].time.hour ==
+                                                        TimeOfDay.now().hour
+                                                    ? Colors.tealAccent[400]
+                                                    : Colors.amberAccent[100],
+                                            title: lectures[index].free
+                                                ? Text(
+                                                    'FREE',
+                                                    style: TextStyle(
+                                                        color: Colors.yellow),
+                                                  )
+                                                : Text(lectures[index].name),
+                                            trailing: Text(
+                                              lectures[index].time.hour ==
+                                                      TimeOfDay.now().hour
+                                                  ? 'now'
+                                                  : '',
+                                              style: TextStyle(
+                                                  backgroundColor: Colors.white,
+                                                  color: Colors.black),
+                                            )),
+                                      );
+                                    },
+                                    itemCount: lectures.length,
+                                  ),
+                        // ListView.builder(
+                        //   itemBuilder: (context, index) {
+                        //     print('///////${sheduled.length}');
+                        //     return ListTile(
+                        //       subtitle: Text(
+                        //         '${sheduled[index].dateime.toString()}',
+                        //         style: TextStyle(color: Colors.white),
+                        //       ),
+                        //       title: Text(
+                        //         '${sheduled[index].name}',
+                        //         style: TextStyle(color: Colors.amber),
+                        //       ),
+                        //     );
+                        //   },
+                        //   itemCount: sheduled.length,
+                        // ),
+                      ),
               ),
               color: Colors.black,
             ),
