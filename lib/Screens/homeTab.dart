@@ -237,6 +237,8 @@ class _HomeTabState extends State<HomeTab> {
                                 ? Text('empty')
                                 : ListView.builder(
                                     itemBuilder: (context, index) {
+                                      int hour = lectures[index].time.hour;
+                                      int length = lectures[index].length;
                                       return Padding(
                                         padding: const EdgeInsets.all(2.0),
                                         child: ListTile(
@@ -244,11 +246,17 @@ class _HomeTabState extends State<HomeTab> {
                                                         .time
                                                         .hour ==
                                                     TimeOfDay.now().hour
-                                                ? Icon(Icons.border_color)
+                                                ? Text(
+                                                    'now',
+                                                    style: TextStyle(
+                                                        fontSize: 30,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  )
                                                 : Icon(
                                                     Icons.access_time_outlined),
-                                            subtitle: Text(
-                                                '${lectures[index].time.hour}-${lectures[index].time.hour + 1}'),
+                                            subtitle:
+                                                Text('$hour-${hour + length}'),
                                             tileColor: lectures[index].free
                                                 ? Colors.red
                                                 : lectures[index].time.hour ==
@@ -263,13 +271,10 @@ class _HomeTabState extends State<HomeTab> {
                                                   )
                                                 : Text(lectures[index].name),
                                             trailing: Text(
-                                              lectures[index].time.hour ==
-                                                      TimeOfDay.now().hour
-                                                  ? 'now'
-                                                  : '',
+                                              '$length hour',
                                               style: TextStyle(
-                                                  backgroundColor: Colors.white,
-                                                  color: Colors.black),
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold),
                                             )),
                                       );
                                     },

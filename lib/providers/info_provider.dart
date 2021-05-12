@@ -399,14 +399,17 @@ class TimeTableData with ChangeNotifier {
       for (i = 0; i < 10; i++) {
         var x = todaysMap[times[hour[i]]];
         x == null
-            ? _lectures.add(
-                Lecture(free: true, time: TimeOfDay(hour: 8 + i, minute: 0)))
+            ? _lectures.add(Lecture(
+                free: true, time: TimeOfDay(hour: 8 + i, minute: 0), length: 1))
             : _lectures.add(Lecture(
                 free: false,
                 length: x[1],
                 name: x[0],
                 time: TimeOfDay(hour: hour[i], minute: 0)));
-        print('${_lectures[i].free}');
+//print('${_lectures[i].free}');
+        if (x != null) {
+          i = i + x[1] - 1;
+        }
       }
     } else {}
     //
