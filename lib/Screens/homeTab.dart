@@ -2,6 +2,7 @@ import 'package:DTUOTG/models/events.dart';
 import 'package:DTUOTG/models/lecture.dart';
 import 'package:DTUOTG/models/screenArguments.dart';
 import 'package:DTUOTG/providers/server_connection_functions.dart';
+import 'package:DTUOTG/widgets/timetable.dart';
 import 'package:flutter/material.dart';
 //import 'package:path/path.dart' as path; //otherwise context error
 import 'package:provider/provider.dart';
@@ -25,13 +26,13 @@ int events0Schedule1 = 0;
 class _HomeTabState extends State<HomeTab> {
   bool eventsInitialized = false;
   List<Event> evesForSchedule = [];
-  List<Lecture> lectures = [];
   List<Event> sheduled = []; ////not implemented globally...only on home tab
   var scf;
   BuildContext bc;
   @override
   void didChangeDependencies() async {
     print('home init');
+
     if (!eventsInitialized) {
       scf = Provider.of<SCF>(context, listen: false).get();
       bc = Provider.of<TabsScreenContext>(context, listen: false).get();
@@ -70,7 +71,7 @@ class _HomeTabState extends State<HomeTab> {
       //   Provider.of<EventsData>(context, listen: false).setEvents(eves);
       //   print(resp);
       // }
-      lectures = Provider.of<TimeTableData>(context, listen: false).get();
+
       sheduled = [];
       evesForSchedule.forEach((element) {
         if (element.favorite) {
@@ -230,73 +231,7 @@ class _HomeTabState extends State<HomeTab> {
                             ),
                         ],
                       )
-                    : Container(
-                        child: !eventsInitialized
-                            ? CircularProgressIndicator()
-                            : lectures.isEmpty
-                                ? Text('empty')
-                                : ListView.builder(
-                                    itemBuilder: (context, index) {
-                                      int hour = lectures[index].time.hour;
-                                      int length = lectures[index].length;
-                                      return Padding(
-                                        padding: const EdgeInsets.all(2.0),
-                                        child: ListTile(
-                                            leading: lectures[index]
-                                                        .time
-                                                        .hour ==
-                                                    TimeOfDay.now().hour
-                                                ? Text(
-                                                    'now',
-                                                    style: TextStyle(
-                                                        fontSize: 30,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  )
-                                                : Icon(
-                                                    Icons.access_time_outlined),
-                                            subtitle:
-                                                Text('$hour-${hour + length}'),
-                                            tileColor: lectures[index].free
-                                                ? Colors.red
-                                                : lectures[index].time.hour ==
-                                                        TimeOfDay.now().hour
-                                                    ? Colors.tealAccent[400]
-                                                    : Colors.amberAccent[100],
-                                            title: lectures[index].free
-                                                ? Text(
-                                                    'FREE',
-                                                    style: TextStyle(
-                                                        color: Colors.yellow),
-                                                  )
-                                                : Text(lectures[index].name),
-                                            trailing: Text(
-                                              '$length hour',
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold),
-                                            )),
-                                      );
-                                    },
-                                    itemCount: lectures.length,
-                                  ),
-                        // ListView.builder(
-                        //   itemBuilder: (context, index) {
-                        //     print('///////${sheduled.length}');
-                        //     return ListTile(
-                        //       subtitle: Text(
-                        //         '${sheduled[index].dateime.toString()}',
-                        //         style: TextStyle(color: Colors.white),
-                        //       ),
-                        //       title: Text(
-                        //         '${sheduled[index].name}',
-                        //         style: TextStyle(color: Colors.amber),
-                        //       ),
-                        //     );
-                        //   },
-                        //   itemCount: sheduled.length,
-                        // ),
-                      ),
+                    : TimeTable(),
               ),
               color: Colors.black,
             ),

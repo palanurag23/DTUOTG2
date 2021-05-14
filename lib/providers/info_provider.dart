@@ -369,29 +369,25 @@ class AddEventScreenData with ChangeNotifier {
 
 class TimeTableData with ChangeNotifier {
   Map<String, dynamic> resp = {};
-  List<Lecture> _lectures = [];
-  List<Lecture> get() => _lectures;
-  int weekDay = DateTime.now().weekday;
   List<String> weekDays = ['MON', 'TUE', 'WED', 'THU', 'FRI'];
-  set(Map<String, dynamic> resp) async {
-    this.resp = resp;
-    Map<String, dynamic> todaysMap;
-    List<int> hour = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
-    Map<int, String> times = {
-      8: '8-9',
-      9: '9-10',
-      10: '10-11',
-      11: '11-12',
-      12: '12-1',
-      13: '1-2',
-      14: '2-3',
-      15: '3-4',
-      16: '4-5',
-      17: '5-6'
-    };
-    List x = resp['MON']['11-12'];
-    //
+  List<int> hour = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+  Map<String, dynamic> todaysMap;
+  Map<int, String> times = {
+    8: '8-9',
+    9: '9-10',
+    10: '10-11',
+    11: '11-12',
+    12: '12-1',
+    13: '1-2',
+    14: '2-3',
+    15: '3-4',
+    16: '4-5',
+    17: '5-6'
+  };
 
+  ///getting days lectures...
+  List<Lecture> get(int weekDay) {
+    List<Lecture> _lectures = [];
     if (weekDay <= 5) {
       todaysMap = weekDay > 5 ? {} : resp[weekDays[weekDay - 1]];
       print('${weekDays[weekDay - 1]} $todaysMap');
@@ -412,12 +408,22 @@ class TimeTableData with ChangeNotifier {
         }
       }
     } else {}
+    return _lectures;
+  }
+
+//int weekDay = DateTime.now().weekday;
+  set(Map<String, dynamic> resp) async {
+    this.resp = resp;
+
+    //List x = resp['MON']['11-12'];
     //
 
-    String lecture = x == null ? 'null' : x[0];
-    int hours = x == null ? 'null' : x[1];
-    int currentHour = DateTime.now().hour;
-    print('hour $currentHour key ${times[currentHour]}');
-    print("lectue $lecture hours $hours");
+    //
+
+    // String lecture = x == null ? 'null' : x[0];
+    //int hours = x == null ? 'null' : x[1];
+    //int currentHour = DateTime.now().hour;
+    //print('hour $currentHour key ${times[currentHour]}');
+    //print("lectue $lecture hours $hours");
   }
 }
