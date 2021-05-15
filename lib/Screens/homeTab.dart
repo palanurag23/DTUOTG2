@@ -231,7 +231,9 @@ class _HomeTabState extends State<HomeTab> {
                             ),
                         ],
                       )
-                    : TimeTable(),
+                    : eventsInitialized
+                        ? TimeTable()
+                        : CircularProgressIndicator(),
               ),
               color: Colors.black,
             ),

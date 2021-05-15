@@ -68,11 +68,25 @@ class _TimeTableState extends State<TimeTable> {
                         itemBuilder: (context, index) {
                           int hour = lectures[index].time.hour;
                           int length = lectures[index].length;
+                          bool happeningNow = false;
+
+                          if (lectures[index].time.hour ==
+                              TimeOfDay.now().hour) {
+                            happeningNow = true;
+                          } else {
+                            if ((lectures[index].time.hour <
+                                    TimeOfDay.now().hour) &&
+                                ((lectures[index].time.hour +
+                                        lectures[index].length) >
+                                    TimeOfDay.now().hour)) {
+                              happeningNow = true;
+                            }
+                          }
+
                           return Padding(
                             padding: const EdgeInsets.all(2.0),
                             child: ListTile(
-                                leading: lectures[index].time.hour ==
-                                        TimeOfDay.now().hour
+                                leading: happeningNow
                                     ? Text(
                                         'now',
                                         style: TextStyle(
@@ -83,8 +97,7 @@ class _TimeTableState extends State<TimeTable> {
                                 subtitle: Text('$hour-${hour + length}'),
                                 tileColor: lectures[index].free
                                     ? Colors.red
-                                    : lectures[index].time.hour ==
-                                            TimeOfDay.now().hour
+                                    : happeningNow
                                         ? Colors.tealAccent[400]
                                         : Colors.amberAccent[100],
                                 title: lectures[index].free
