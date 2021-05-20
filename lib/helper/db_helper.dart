@@ -16,6 +16,15 @@ class DbHelper {
     //......................................Getting access to DB
   }
 
+  static Future<Database> dataBaseForTimeTable() async {
+    final dbPath = await sql.getDatabasesPath();
+    return sql.openDatabase(path.join(dbPath, 'TimeTable'),
+        onCreate: (db, version) {
+      return db.execute(
+          'CREATE TABLE TimeTable(id TEXT PRIMARY KEY,timeTable TEXT)');
+    }, version: 1);
+  }
+
   static Future<Database> dataBaseForOwnerId() async {
     //......................................Getting access to DB
     final dbPath = await sql.getDatabasesPath();
@@ -87,6 +96,15 @@ class DbHelper {
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
   }
 
+  static Future<void> insertTimeTable(
+    String table,
+    Map<String, Object> timeTable,
+  ) async {
+    final dbForTimeTable = await DbHelper.dataBaseForTimeTable();
+    dbForTimeTable.insert(table, timeTable,
+        conflictAlgorithm: sql.ConflictAlgorithm.replace);
+  }
+
   static Future<void> insertProfile(
     String table,
     Map<String, Object> profile,
@@ -106,9 +124,15 @@ class DbHelper {
   }
 
   ///
+  ///Delete
   ///
-  ///
+  static Future<void> deleteTimeTableDatabase() async {
+    Database db = await DbHelper.dataBaseForTimeTable();
+    String path = db.path;
+    await sql.deleteDatabase(path);
+  }
 
+  ///
   static Future<int> deleteAccessTokenData(String id) async {
     final db = await DbHelper.dataBaseForAccessToken();
     var result =
@@ -123,6 +147,11 @@ class DbHelper {
   static Future<List<Map<String, dynamic>>> getAccessTokenData() async {
     final db = await DbHelper.dataBaseForAccessToken();
     return db.query('AccessToken');
+  }
+
+  static Future<List<Map<String, dynamic>>> getTimeTableData() async {
+    final db = await DbHelper.dataBaseForTimeTable();
+    return db.query('TimeTable');
   }
 
   static Future<List<Map<String, dynamic>>> getUsernameData() async {

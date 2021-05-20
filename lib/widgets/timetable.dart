@@ -5,7 +5,8 @@ import 'package:provider/provider.dart';
 import '../providers/info_provider.dart';
 
 class TimeTable extends StatefulWidget {
-  TimeTable({Key key}) : super(key: key);
+  int day;
+  TimeTable({Key key, this.day}) : super(key: key);
 
   @override
   _TimeTableState createState() => _TimeTableState();
@@ -14,8 +15,8 @@ class TimeTable extends StatefulWidget {
 class _TimeTableState extends State<TimeTable> {
   List<Lecture> lectures = [];
   bool initialized = false;
-
   int weekDayIndex = 1;
+
   @override
   void didChangeDependencies() {
     if (!initialized) {

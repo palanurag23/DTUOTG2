@@ -384,6 +384,10 @@ class TimeTableData with ChangeNotifier {
     16: '4-5',
     17: '5-6'
   };
+//
+  Future<void> deleteTimeTable() async {
+    await DbHelper.deleteTimeTableDatabase();
+  }
 
   ///getting days lectures...
   List<Lecture> get(int weekDay) {
@@ -402,28 +406,43 @@ class TimeTableData with ChangeNotifier {
                 length: x[1],
                 name: x[0],
                 time: TimeOfDay(hour: hour[i], minute: 0)));
-//print('${_lectures[i].free}');
+
         if (x != null) {
           i = i + x[1] - 1;
         }
       }
-    } else {}
+    } else {
+      _lectures = [];
+    }
     return _lectures;
   }
 
-//int weekDay = DateTime.now().weekday;
   set(Map<String, dynamic> resp) async {
     this.resp = resp;
+  }
 
-    //List x = resp['MON']['11-12'];
-    //
+  Future<void> fetchAndSetData(BuildContext buildContext) async {
+    var scf;
+    scf = Provider.of<SCF>(buildContext, listen: false).get();
 
-    //
+    print('fetching TimeTable');
+    var timeTableData = await DbHelper.getTimeTableData();
+    if (timeTableData.isEmpty) {
+      print('....................................empty TimeTable');
 
-    // String lecture = x == null ? 'null' : x[0];
-    //int hours = x == null ? 'null' : x[1];
-    //int currentHour = DateTime.now().hour;
-    //print('hour $currentHour key ${times[currentHour]}');
-    //print("lectue $lecture hours $hours");
+      Map<String, dynamic> ttMap = await scf.timeTableDownload(buildContext);
+      //  resp = ttMap;
+      var mapEncoded = json.encode(ttMap);
+      await DbHelper.insertTimeTable(
+          'TimeTable', {'id': 'id', 'timeTable': '${mapEncoded.toString()}'});
+    } else {
+      print('............non empty TimeTable');
+
+      resp = json.decode((timeTableData[0]['timeTable']));
+      print('${resp.toString()}');
+      //resp = json.decode(jsonEncode(tt));
+      print('................TimeTable fetched and set');
+    }
+    notifyListeners();
   }
 }

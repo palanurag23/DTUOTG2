@@ -36,9 +36,10 @@ class _HomeTabState extends State<HomeTab> {
     if (!eventsInitialized) {
       scf = Provider.of<SCF>(context, listen: false).get();
       bc = Provider.of<TabsScreenContext>(context, listen: false).get();
-      await scf.fetchListOfEvents(bc);
-      await scf.timeTableDownload(bc);
-      evesForSchedule = Provider.of<EventsData>(context, listen: false).events;
+
+//await Provider.of<TimeTableData>(bc, listen: false).fetchAndSetData(bc);
+      //await scf.timeTableDownload(bc);
+      evesForSchedule = Provider.of<EventsData>(bc, listen: false).events;
       // var lastRefreshedTime =
       //     Provider.of<EventsData>(context, listen: false).getLastRefreshed();
       // int x = DateTime.now().difference(lastRefreshedTime).inSeconds;
@@ -79,9 +80,11 @@ class _HomeTabState extends State<HomeTab> {
         }
       });
       //  Provider.of<EventsData>(context, listen: false).setLastRefreshed();
-      setState(() {
-        eventsInitialized = true;
-      });
+      if (mounted) {
+        setState(() {
+          eventsInitialized = true;
+        });
+      }
     }
 
     // TODO: implement didChangeDependencies

@@ -1,4 +1,5 @@
 import 'package:DTUOTG/Screens/homeTab.dart';
+import 'package:DTUOTG/Screens/scheduleTab.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/info_provider.dart';
@@ -55,8 +56,14 @@ class _TabsScreenState extends State<TabsScreen> {
     Provider.of<UsernameData>(context, listen: false)
         .fetchAndSetData(); //can't use await here...if necessary use future builder in your widget
     var ht;
+    var scf;
+
     //
     if (!initialized) {
+      scf = Provider.of<SCF>(context, listen: false).get();
+      await Provider.of<TimeTableData>(context, listen: false)
+          .fetchAndSetData(context);
+      await scf.fetchListOfEvents(context);
       var mediaQueryData = MediaQuery.of(context);
       var totalHeight = mediaQueryData.size.height;
       var bottomNavigationBarHeight = mediaQueryData.padding.bottom;
@@ -70,10 +77,7 @@ class _TabsScreenState extends State<TabsScreen> {
           'page': ht,
         },
         {
-          'page': HomeTab(
-            statusBarHeight: statusBarHeight,
-            height: totalHeight - bottomNavigationBarHeight,
-          ),
+          'page': ScheduleTab(),
         },
         {
           'page': ht,
@@ -85,7 +89,9 @@ class _TabsScreenState extends State<TabsScreen> {
           'page': ht,
         }
       ];
-      initialized = false;
+      setState(() {
+        initialized = true;
+      });
     }
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
@@ -133,68 +139,74 @@ class _TabsScreenState extends State<TabsScreen> {
     var bottomNavigationBarHeight = mediaQueryData.padding.bottom;
     var statusBarHeight = mediaQueryData.padding.top;
     Provider.of<TabsScreenContext>(context, listen: false).set(context);
-    return Scaffold(
-      key: _drawerKey,
-      drawer: Drawer(
-        child: drawer.Drawer(
-          statusBarHeight: statusBarHeight,
-        ),
-      ),
-      backgroundColor: Colors.white,
-      body: Stack(children: [
-        _pages[_selectedPageIndex]['page'],
-        Positioned(
-          left: 20,
-          top: 40,
-          child: IconButton(
-              icon: Icon(Icons.line_weight_rounded),
-              onPressed: () => _drawerKey.currentState.openDrawer()),
-        ),
-      ]),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.shifting,
-        // type: BottomNavigationBarType.shifting,//with shifting..style items separatly
-        selectedFontSize: 15, unselectedFontSize: 10,
-        currentIndex: _selectedPageIndex, //WHICH TAB IS SELECTED/HIGHLIGHTED
-        unselectedItemColor:
-            Colors.white, //grey[300], //Theme.of(context).canvasColor,
-        selectedItemColor: Colors.amber,
-        onTap: _selectPage, //flutter will automaticlly give 'index' of the tab
-        backgroundColor: Theme.of(context).accentColor,
-        items: [
-          BottomNavigationBarItem(
-            activeIcon: Icon(Icons.home_repair_service_sharp),
-            backgroundColor: Colors.black,
-            icon: Icon(Icons.home_repair_service_sharp),
-            label: '0',
-          ),
-          BottomNavigationBarItem(
-            activeIcon: Icon(Icons.calendar_today_sharp),
-            backgroundColor: Colors.black,
-            icon: Icon(Icons.calendar_today_sharp),
-            label: '1',
-          ),
-          BottomNavigationBarItem(
-            activeIcon: Icon(Icons.home_rounded),
-            backgroundColor: Colors.blueGrey[900],
-            icon: Icon(Icons.home_rounded),
-            label: 'HOME',
-          ),
-          BottomNavigationBarItem(
-            activeIcon: Icon(Icons.people_outline),
-            backgroundColor: Colors.black,
-            icon: Icon(Icons.people_outline),
-            label: '3',
-          ),
-          BottomNavigationBarItem(
-            activeIcon: Icon(Icons.location_on_rounded),
-            backgroundColor: Colors.black,
-            //  backgroundColor: Theme.of(context).primaryColor,//with shifting
-            icon: Icon(Icons.location_on_rounded),
-            label: '4',
-          ),
-        ],
-      ),
-    );
+    return initialized
+        ? Scaffold(
+            key: _drawerKey,
+            drawer: Drawer(
+              child: drawer.Drawer(
+                statusBarHeight: statusBarHeight,
+              ),
+            ),
+            backgroundColor: Colors.white,
+            body: Stack(children: [
+              _pages[_selectedPageIndex]['page'],
+              Positioned(
+                left: 20,
+                top: 40,
+                child: IconButton(
+                    icon: Icon(Icons.line_weight_rounded),
+                    onPressed: () => _drawerKey.currentState.openDrawer()),
+              ),
+            ]),
+            bottomNavigationBar: BottomNavigationBar(
+              type: BottomNavigationBarType.shifting,
+              // type: BottomNavigationBarType.shifting,//with shifting..style items separatly
+              selectedFontSize: 15, unselectedFontSize: 10,
+              currentIndex:
+                  _selectedPageIndex, //WHICH TAB IS SELECTED/HIGHLIGHTED
+              unselectedItemColor:
+                  Colors.white, //grey[300], //Theme.of(context).canvasColor,
+              selectedItemColor: Colors.amber,
+              onTap:
+                  _selectPage, //flutter will automaticlly give 'index' of the tab
+              backgroundColor: Theme.of(context).accentColor,
+              items: [
+                BottomNavigationBarItem(
+                  activeIcon: Icon(Icons.home_repair_service_sharp),
+                  backgroundColor: Colors.black,
+                  icon: Icon(Icons.home_repair_service_sharp),
+                  label: '0',
+                ),
+                BottomNavigationBarItem(
+                  activeIcon: Icon(Icons.calendar_today_sharp),
+                  backgroundColor: Colors.black,
+                  icon: Icon(Icons.calendar_today_sharp),
+                  label: '1',
+                ),
+                BottomNavigationBarItem(
+                  activeIcon: Icon(Icons.home_rounded),
+                  backgroundColor: Colors.blueGrey[900],
+                  icon: Icon(Icons.home_rounded),
+                  label: 'HOME',
+                ),
+                BottomNavigationBarItem(
+                  activeIcon: Icon(Icons.people_outline),
+                  backgroundColor: Colors.black,
+                  icon: Icon(Icons.people_outline),
+                  label: '3',
+                ),
+                BottomNavigationBarItem(
+                  activeIcon: Icon(Icons.location_on_rounded),
+                  backgroundColor: Colors.black,
+                  //  backgroundColor: Theme.of(context).primaryColor,//with shifting
+                  icon: Icon(Icons.location_on_rounded),
+                  label: '4',
+                ),
+              ],
+            ),
+          )
+        : Center(
+            child: CircularProgressIndicator(),
+          );
   }
 }

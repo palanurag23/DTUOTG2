@@ -30,6 +30,13 @@ class Drawer extends StatelessWidget {
                     },
                     title: Text('invite friend'),
                   ),
+                  ListTile(
+                    onTap: () async {
+                      await Provider.of<TimeTableData>(context, listen: false)
+                          .deleteTimeTable();
+                    },
+                    title: Text('delete TimeTable '),
+                  ),
                   ElevatedButton.icon(
                       onPressed: () async {
                         var result = await Provider.of<AccessTokenData>(context,
