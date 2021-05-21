@@ -24,14 +24,18 @@ class _ScheduleTabState extends State<ScheduleTab> {
     return utl.kEvents[day] ?? [];
   }
 
+  List<Event> sheduled = []; ////not implemented globally...only on home tab
+  List<Event> sheduledToday = [];
   bool initialized = false;
 
   List<Lecture> lectures = [];
   int weekDayIndex = 1;
+  List<Event> evesForSchedule = [];
 
   @override
   void didChangeDependencies() {
     if (!initialized) {
+      evesForSchedule = Provider.of<EventsData>(context, listen: false).events;
       weekDayIndex = DateTime.now().weekday > 5 ? 5 : DateTime.now().weekday;
 
       lectures =
@@ -39,6 +43,11 @@ class _ScheduleTabState extends State<ScheduleTab> {
 
       setState(() {
         initialized = true;
+      });
+      evesForSchedule.forEach((element) {
+        if (element.favorite) {
+          sheduled.add(element);
+        }
       });
     }
 
@@ -62,6 +71,15 @@ class _ScheduleTabState extends State<ScheduleTab> {
 
   @override
   Widget build(BuildContext context) {
+    sheduledToday = [];
+    sheduled.forEach((element) {
+      if ((element.dateime.day == _selectedDay.day) &&
+          (element.dateime.month == _selectedDay.month) &&
+          (element.dateime.year == _selectedDay.year)) {
+        sheduledToday.add(element);
+      }
+    });
+
     return Container(
       color: Colors.white,
       padding: EdgeInsets.only(top: 70),
@@ -91,19 +109,53 @@ class _ScheduleTabState extends State<ScheduleTab> {
                   _focusedDay = focusedDay; // update `_focusedDay` here as well
                 });
               },
-              firstDay: DateTime.now().subtract(Duration(days: 10)),
-              lastDay: DateTime.now().add(Duration(days: 10)),
+              firstDay: DateTime.now().subtract(Duration(days: 100)),
+              lastDay: DateTime.now().add(Duration(days: 100)),
               focusedDay: _focusedDay,
             ),
           ),
-          Text('${_selectedDay.toString()}'),
+          if (initialized)
+            if (sheduledToday.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 0),
+                child: Text(
+                  'empty events today',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+          if (sheduledToday.isNotEmpty)
+            Container(
+              height: 150,
+              child: ListView.builder(
+                  itemCount: sheduledToday.length,
+                  itemBuilder: (context, index) {
+                    var events = sheduledToday;
+                    return ListTile(
+                      tileColor: events[index].favorite
+                          ? Colors.redAccent
+                          : Colors.blueGrey[900],
+                      subtitle: Text(
+                        events[index].eventType,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      leading: Icon(
+                        Icons.ac_unit,
+                        color: Colors.blue,
+                      ),
+                      title: Text(
+                        events[index].name,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  }),
+            ),
           if (!initialized) CircularProgressIndicator(),
           if (initialized)
             if (lectures.isEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 50),
                 child: Text(
-                  'empty',
+                  'empty lectures',
                   style: TextStyle(fontSize: 50),
                 ),
               ),
